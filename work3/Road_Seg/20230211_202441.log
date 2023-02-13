@@ -1,0 +1,2618 @@
+2023-02-11 20:24:41,330 - mmseg - INFO - Multi-processing start method is `None`
+2023-02-11 20:24:41,331 - mmseg - INFO - OpenCV num_threads is `16
+2023-02-11 20:24:41,422 - mmseg - INFO - Environment info:
+------------------------------------------------------------
+sys.platform: linux
+Python: 3.8.16 (default, Jan 17 2023, 23:13:24) [GCC 11.2.0]
+CUDA available: True
+GPU 0: NVIDIA GeForce RTX 3090
+CUDA_HOME: /usr/local/cuda
+NVCC: Cuda compilation tools, release 11.3, V11.3.109
+GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+PyTorch: 1.11.0+cu113
+PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.5.2 (Git Hash a9302535553c73243c632ad3c4c80beec3d19a1e)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.3
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.2
+  - Magma 2.5.2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.3, CUDNN_VERSION=8.2.0, CXX_COMPILER=/opt/rh/devtoolset-7/root/usr/bin/c++, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.11.0, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=OFF, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+TorchVision: 0.12.0+cu113
+OpenCV: 4.6.0
+MMCV: 1.7.0
+MMCV Compiler: GCC 9.3
+MMCV CUDA Compiler: 11.3
+MMSegmentation: 0.30.0+8ea3ea3
+------------------------------------------------------------
+
+2023-02-11 20:24:41,423 - mmseg - INFO - Distributed training: False
+2023-02-11 20:24:42,161 - mmseg - INFO - Config:
+norm_cfg = dict(type='SyncBN', requires_grad=True)
+model = dict(
+    type='EncoderDecoder',
+    pretrained='open-mmlab://resnet50_v1c',
+    backbone=dict(
+        type='ResNetV1c',
+        depth=50,
+        num_stages=4,
+        out_indices=(0, 1, 2, 3),
+        dilations=(1, 1, 2, 4),
+        strides=(1, 2, 1, 1),
+        norm_cfg=dict(type='SyncBN', requires_grad=True),
+        norm_eval=False,
+        style='pytorch',
+        contract_dilation=True),
+    decode_head=dict(
+        type='PSPHead',
+        in_channels=2048,
+        in_index=3,
+        channels=512,
+        pool_scales=(1, 2, 3, 6),
+        dropout_ratio=0.1,
+        num_classes=8,
+        norm_cfg=dict(type='SyncBN', requires_grad=True),
+        align_corners=False,
+        loss_decode=dict(
+            type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0)),
+    auxiliary_head=dict(
+        type='FCNHead',
+        in_channels=1024,
+        in_index=2,
+        channels=256,
+        num_convs=1,
+        concat_input=False,
+        dropout_ratio=0.1,
+        num_classes=8,
+        norm_cfg=dict(type='SyncBN', requires_grad=True),
+        align_corners=False,
+        loss_decode=dict(
+            type='CrossEntropyLoss', use_sigmoid=False, loss_weight=0.4)),
+    train_cfg=dict(),
+    test_cfg=dict(mode='whole'))
+dataset_type = 'StanfordBackgroundDataset'
+data_root = '/root/autodl-tmp/mmsegmentation/data/iccv09Data'
+img_dir = '/root/autodl-tmp/mmsegmentation/data/iccv09Data/images'
+ann_dir = '/root/autodl-tmp/mmsegmentation/data/iccv09Data/labels'
+img_scale = (320, 240)
+crop_size = (256, 256)
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations'),
+    dict(
+        type='Resize',
+        img_scale=(320, 240),
+        ratio_range=(0.5, 2.0),
+        keep_ratio=True),
+    dict(type='RandomCrop', crop_size=(256, 256), cat_max_ratio=0.75),
+    dict(type='RandomFlip', prob=0.5),
+    dict(
+        type='Normalize',
+        mean=[123.675, 116.28, 103.53],
+        std=[58.395, 57.12, 57.375],
+        to_rgb=True),
+    dict(type='Pad', size=(256, 256), pad_val=0, seg_pad_val=255),
+    dict(type='DefaultFormatBundle'),
+    dict(type='Collect', keys=['img', 'gt_semantic_seg'])
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=(320, 240),
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip'),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img'])
+        ])
+]
+data = dict(
+    samples_per_gpu=16,
+    workers_per_gpu=1,
+    train=dict(
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations'),
+            dict(
+                type='Resize',
+                img_scale=(320, 240),
+                ratio_range=(0.5, 2.0),
+                keep_ratio=True),
+            dict(type='RandomCrop', crop_size=(256, 256), cat_max_ratio=0.75),
+            dict(type='RandomFlip', prob=0.5),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size=(256, 256), pad_val=0, seg_pad_val=255),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_semantic_seg'])
+        ],
+        type='StanfordBackgroundDataset',
+        data_root='/root/autodl-tmp/mmsegmentation/data/iccv09Data',
+        img_dir='/root/autodl-tmp/mmsegmentation/data/iccv09Data/images',
+        ann_dir='/root/autodl-tmp/mmsegmentation/data/iccv09Data/labels',
+        split='/root/autodl-tmp/mmsegmentation/data/iccv09Data/splits/train.txt'
+    ),
+    val=dict(
+        type='StanfordBackgroundDataset',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(320, 240),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ],
+        data_root='/root/autodl-tmp/mmsegmentation/data/iccv09Data',
+        img_dir='/root/autodl-tmp/mmsegmentation/data/iccv09Data/images',
+        ann_dir='/root/autodl-tmp/mmsegmentation/data/iccv09Data/labels',
+        split='/root/autodl-tmp/mmsegmentation/data/iccv09Data/splits/val.txt'
+    ),
+    test=dict(
+        type='StanfordBackgroundDataset',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(320, 240),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ],
+        data_root='/root/autodl-tmp/mmsegmentation/data/iccv09Data',
+        img_dir='/root/autodl-tmp/mmsegmentation/data/iccv09Data/images',
+        ann_dir='/root/autodl-tmp/mmsegmentation/data/iccv09Data/labels',
+        split='/root/autodl-tmp/mmsegmentation/data/iccv09Data/splits/val.txt')
+)
+load_from = None
+log_config = dict(
+    interval=200, hooks=[dict(type='TextLoggerHook', by_epoch=False)])
+dist_params = dict(backend='nccl')
+log_level = 'INFO'
+resume_from = None
+workflow = [('train', 1)]
+cudnn_benchmark = True
+optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0005)
+optimizer_config = dict()
+lr_config = dict(policy='poly', power=0.9, min_lr=0.0001, by_epoch=False)
+runner = dict(type='IterBasedRunner', max_iters=40000)
+checkpoint_config = dict(by_epoch=False, interval=10000)
+evaluation = dict(interval=500, metric='mIoU', pre_eval=True)
+randomness = dict(seed=0)
+work_dir = 'work/pspnet'
+gpu_ids = [0]
+auto_resume = False
+
+2023-02-11 20:24:42,161 - mmseg - INFO - Set random seed to 1864129512, deterministic: False
+2023-02-11 20:24:42,821 - mmseg - INFO - initialize ResNetV1c with init_cfg {'type': 'Pretrained', 'checkpoint': 'open-mmlab://resnet50_v1c'}
+2023-02-11 20:24:42,972 - mmseg - INFO - initialize PSPHead with init_cfg {'type': 'Normal', 'std': 0.01, 'override': {'name': 'conv_seg'}}
+2023-02-11 20:24:43,097 - mmseg - INFO - initialize FCNHead with init_cfg {'type': 'Normal', 'std': 0.01, 'override': {'name': 'conv_seg'}}
+Name of parameter - Initialization information
+
+backbone.stem.0.weight - torch.Size([32, 3, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.stem.1.weight - torch.Size([32]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.stem.1.bias - torch.Size([32]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.stem.3.weight - torch.Size([32, 32, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.stem.4.weight - torch.Size([32]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.stem.4.bias - torch.Size([32]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.stem.6.weight - torch.Size([64, 32, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.stem.7.weight - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.stem.7.bias - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.conv1.weight - torch.Size([64, 64, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.bn1.weight - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.bn1.bias - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.conv2.weight - torch.Size([64, 64, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.bn2.weight - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.bn2.bias - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.conv3.weight - torch.Size([256, 64, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.bn3.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.bn3.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.downsample.0.weight - torch.Size([256, 64, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.downsample.1.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.0.downsample.1.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.1.conv1.weight - torch.Size([64, 256, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.1.bn1.weight - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.1.bn1.bias - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.1.conv2.weight - torch.Size([64, 64, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.1.bn2.weight - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.1.bn2.bias - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.1.conv3.weight - torch.Size([256, 64, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.1.bn3.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.1.bn3.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.2.conv1.weight - torch.Size([64, 256, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.2.bn1.weight - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.2.bn1.bias - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.2.conv2.weight - torch.Size([64, 64, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.2.bn2.weight - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.2.bn2.bias - torch.Size([64]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.2.conv3.weight - torch.Size([256, 64, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.2.bn3.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer1.2.bn3.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.conv1.weight - torch.Size([128, 256, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.bn1.weight - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.bn1.bias - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.conv2.weight - torch.Size([128, 128, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.bn2.weight - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.bn2.bias - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.conv3.weight - torch.Size([512, 128, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.bn3.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.bn3.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.downsample.0.weight - torch.Size([512, 256, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.downsample.1.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.0.downsample.1.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.1.conv1.weight - torch.Size([128, 512, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.1.bn1.weight - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.1.bn1.bias - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.1.conv2.weight - torch.Size([128, 128, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.1.bn2.weight - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.1.bn2.bias - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.1.conv3.weight - torch.Size([512, 128, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.1.bn3.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.1.bn3.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.2.conv1.weight - torch.Size([128, 512, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.2.bn1.weight - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.2.bn1.bias - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.2.conv2.weight - torch.Size([128, 128, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.2.bn2.weight - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.2.bn2.bias - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.2.conv3.weight - torch.Size([512, 128, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.2.bn3.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.2.bn3.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.3.conv1.weight - torch.Size([128, 512, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.3.bn1.weight - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.3.bn1.bias - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.3.conv2.weight - torch.Size([128, 128, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.3.bn2.weight - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.3.bn2.bias - torch.Size([128]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.3.conv3.weight - torch.Size([512, 128, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.3.bn3.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer2.3.bn3.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.conv1.weight - torch.Size([256, 512, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.downsample.0.weight - torch.Size([1024, 512, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.downsample.1.weight - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.0.downsample.1.bias - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.1.conv1.weight - torch.Size([256, 1024, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.1.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.1.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.1.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.1.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.1.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.1.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.1.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.1.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.2.conv1.weight - torch.Size([256, 1024, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.2.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.2.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.2.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.2.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.2.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.2.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.2.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.2.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.3.conv1.weight - torch.Size([256, 1024, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.3.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.3.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.3.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.3.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.3.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.3.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.3.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.3.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.4.conv1.weight - torch.Size([256, 1024, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.4.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.4.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.4.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.4.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.4.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.4.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.4.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.4.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.5.conv1.weight - torch.Size([256, 1024, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.5.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.5.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.5.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.5.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.5.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.5.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.5.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer3.5.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.conv1.weight - torch.Size([512, 1024, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.bn1.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.bn1.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.conv2.weight - torch.Size([512, 512, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.bn2.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.bn2.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.conv3.weight - torch.Size([2048, 512, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.bn3.weight - torch.Size([2048]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.bn3.bias - torch.Size([2048]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.downsample.0.weight - torch.Size([2048, 1024, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.downsample.1.weight - torch.Size([2048]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.0.downsample.1.bias - torch.Size([2048]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.1.conv1.weight - torch.Size([512, 2048, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.1.bn1.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.1.bn1.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.1.conv2.weight - torch.Size([512, 512, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.1.bn2.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.1.bn2.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.1.conv3.weight - torch.Size([2048, 512, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.1.bn3.weight - torch.Size([2048]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.1.bn3.bias - torch.Size([2048]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.2.conv1.weight - torch.Size([512, 2048, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.2.bn1.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.2.bn1.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.2.conv2.weight - torch.Size([512, 512, 3, 3]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.2.bn2.weight - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.2.bn2.bias - torch.Size([512]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.2.conv3.weight - torch.Size([2048, 512, 1, 1]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.2.bn3.weight - torch.Size([2048]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+backbone.layer4.2.bn3.bias - torch.Size([2048]): 
+PretrainedInit: load from open-mmlab://resnet50_v1c 
+
+decode_head.conv_seg.weight - torch.Size([8, 512, 1, 1]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+decode_head.conv_seg.bias - torch.Size([8]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+decode_head.psp_modules.0.1.conv.weight - torch.Size([512, 2048, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.0.1.bn.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.0.1.bn.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.1.1.conv.weight - torch.Size([512, 2048, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.1.1.bn.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.1.1.bn.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.2.1.conv.weight - torch.Size([512, 2048, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.2.1.bn.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.2.1.bn.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.3.1.conv.weight - torch.Size([512, 2048, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.3.1.bn.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.psp_modules.3.1.bn.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.bottleneck.conv.weight - torch.Size([512, 4096, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+decode_head.bottleneck.bn.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.bottleneck.bn.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+auxiliary_head.conv_seg.weight - torch.Size([8, 256, 1, 1]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+auxiliary_head.conv_seg.bias - torch.Size([8]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+auxiliary_head.convs.0.conv.weight - torch.Size([256, 1024, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+auxiliary_head.convs.0.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+auxiliary_head.convs.0.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+2023-02-11 20:24:43,109 - mmseg - INFO - EncoderDecoder(
+  (backbone): ResNetV1c(
+    (stem): Sequential(
+      (0): Conv2d(3, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): _BatchNormXd(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+      (3): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+      (4): _BatchNormXd(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (5): ReLU(inplace=True)
+      (6): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+      (7): _BatchNormXd(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (8): ReLU(inplace=True)
+    )
+    (maxpool): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+    (layer1): ResLayer(
+      (0): Bottleneck(
+        (conv1): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn2): _BatchNormXd(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+        (downsample): Sequential(
+          (0): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (1): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): Bottleneck(
+        (conv1): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn2): _BatchNormXd(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+      (2): Bottleneck(
+        (conv1): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn2): _BatchNormXd(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (layer2): ResLayer(
+      (0): Bottleneck(
+        (conv1): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (bn2): _BatchNormXd(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+        (downsample): Sequential(
+          (0): Conv2d(256, 512, kernel_size=(1, 1), stride=(2, 2), bias=False)
+          (1): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): Bottleneck(
+        (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn2): _BatchNormXd(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+      (2): Bottleneck(
+        (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn2): _BatchNormXd(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+      (3): Bottleneck(
+        (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn2): _BatchNormXd(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (layer3): ResLayer(
+      (0): Bottleneck(
+        (conv1): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn2): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+        (downsample): Sequential(
+          (0): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (1): _BatchNormXd(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): Bottleneck(
+        (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+        (bn2): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+      (2): Bottleneck(
+        (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+        (bn2): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+      (3): Bottleneck(
+        (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+        (bn2): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+      (4): Bottleneck(
+        (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+        (bn2): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+      (5): Bottleneck(
+        (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+        (bn2): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (layer4): ResLayer(
+      (0): Bottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+        (bn2): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+        (downsample): Sequential(
+          (0): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (1): _BatchNormXd(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): Bottleneck(
+        (conv1): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(4, 4), dilation=(4, 4), bias=False)
+        (bn2): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+      (2): Bottleneck(
+        (conv1): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(4, 4), dilation=(4, 4), bias=False)
+        (bn2): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): _BatchNormXd(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+    )
+  )
+  init_cfg={'type': 'Pretrained', 'checkpoint': 'open-mmlab://resnet50_v1c'}
+  (decode_head): PSPHead(
+    input_transform=None, ignore_index=255, align_corners=False
+    (loss_decode): CrossEntropyLoss(avg_non_ignore=False)
+    (conv_seg): Conv2d(512, 8, kernel_size=(1, 1), stride=(1, 1))
+    (dropout): Dropout2d(p=0.1, inplace=False)
+    (psp_modules): PPM(
+      (0): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=1)
+        (1): ConvModule(
+          (conv): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (bn): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (activate): ReLU(inplace=True)
+        )
+      )
+      (1): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=2)
+        (1): ConvModule(
+          (conv): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (bn): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (activate): ReLU(inplace=True)
+        )
+      )
+      (2): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=3)
+        (1): ConvModule(
+          (conv): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (bn): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (activate): ReLU(inplace=True)
+        )
+      )
+      (3): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=6)
+        (1): ConvModule(
+          (conv): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (bn): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (activate): ReLU(inplace=True)
+        )
+      )
+    )
+    (bottleneck): ConvModule(
+      (conv): Conv2d(4096, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+      (bn): _BatchNormXd(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+  )
+  init_cfg={'type': 'Normal', 'std': 0.01, 'override': {'name': 'conv_seg'}}
+  (auxiliary_head): FCNHead(
+    input_transform=None, ignore_index=255, align_corners=False
+    (loss_decode): CrossEntropyLoss(avg_non_ignore=False)
+    (conv_seg): Conv2d(256, 8, kernel_size=(1, 1), stride=(1, 1))
+    (dropout): Dropout2d(p=0.1, inplace=False)
+    (convs): Sequential(
+      (0): ConvModule(
+        (conv): Conv2d(1024, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+    )
+  )
+  init_cfg={'type': 'Normal', 'std': 0.01, 'override': {'name': 'conv_seg'}}
+)
+2023-02-11 20:24:43,114 - mmseg - INFO - Loaded 572 images
+2023-02-11 20:24:48,362 - mmseg - INFO - Loaded 143 images
+2023-02-11 20:24:48,362 - mmseg - INFO - Start running, host: root@autodl-container-9e2911833c-9adc88f1, work_dir: /root/autodl-tmp/mmsegmentation/work/pspnet
+2023-02-11 20:24:48,362 - mmseg - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(NORMAL      ) CheckpointHook                     
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+ -------------------- 
+after_train_iter:
+(ABOVE_NORMAL) OptimizerHook                      
+(NORMAL      ) CheckpointHook                     
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) CheckpointHook                     
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_val_epoch:
+(LOW         ) IterTimerHook                      
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_epoch:
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+after_run:
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+2023-02-11 20:24:48,362 - mmseg - INFO - workflow: [('train', 1)], max: 40000 iters
+2023-02-11 20:24:48,363 - mmseg - INFO - Checkpoints will be saved to /root/autodl-tmp/mmsegmentation/work/pspnet by HardDiskBackend.
+2023-02-11 20:25:49,454 - mmseg - INFO - Iter [200/40000]	lr: 9.956e-03, eta: 3:21:48, time: 0.304, data_time: 0.058, memory: 14046, decode.loss_ce: 0.5921, decode.acc_seg: 77.5461, aux.loss_ce: 0.3143, aux.acc_seg: 71.0226, loss: 0.9063
+2023-02-11 20:26:48,501 - mmseg - INFO - Iter [400/40000]	lr: 9.911e-03, eta: 3:17:49, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.3216, decode.acc_seg: 87.2018, aux.loss_ce: 0.1664, aux.acc_seg: 84.5408, loss: 0.4879
+2023-02-11 20:27:30,128 - mmseg - INFO - per class results:
+2023-02-11 20:27:30,129 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 88.12 | 92.21 |
+|  tree  | 69.93 | 83.22 |
+|  road  | 88.31 | 95.25 |
+| grass  | 79.07 | 86.12 |
+| water  | 83.53 | 88.75 |
+|  bldg  |  77.8 | 88.79 |
+|  mntn  | 36.31 | 42.75 |
+| fg obj | 71.13 |  83.3 |
++--------+-------+-------+
+2023-02-11 20:27:30,129 - mmseg - INFO - Summary:
+2023-02-11 20:27:30,129 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 88.48 | 74.28 | 82.55 |
++-------+-------+-------+
+2023-02-11 20:27:30,130 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8848, mIoU: 0.7428, mAcc: 0.8255, IoU.sky: 0.8812, IoU.tree: 0.6993, IoU.road: 0.8831, IoU.grass: 0.7907, IoU.water: 0.8353, IoU.bldg: 0.7780, IoU.mntn: 0.3631, IoU.fg obj: 0.7113, Acc.sky: 0.9221, Acc.tree: 0.8322, Acc.road: 0.9525, Acc.grass: 0.8612, Acc.water: 0.8875, Acc.bldg: 0.8879, Acc.mntn: 0.4275, Acc.fg obj: 0.8330
+2023-02-11 20:27:59,517 - mmseg - INFO - Iter [600/40000]	lr: 9.866e-03, eta: 3:41:51, time: 0.414, data_time: 0.188, memory: 14046, decode.loss_ce: 0.2617, decode.acc_seg: 89.3417, aux.loss_ce: 0.1360, aux.acc_seg: 86.9216, loss: 0.3978
+2023-02-11 20:28:56,271 - mmseg - INFO - Iter [800/40000]	lr: 9.822e-03, eta: 3:31:53, time: 0.284, data_time: 0.058, memory: 14046, decode.loss_ce: 0.2421, decode.acc_seg: 90.2196, aux.loss_ce: 0.1275, aux.acc_seg: 87.7277, loss: 0.3696
+2023-02-11 20:29:55,021 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:29:55,021 - mmseg - INFO - Iter [1000/40000]	lr: 9.777e-03, eta: 3:26:50, time: 0.294, data_time: 0.068, memory: 14046, decode.loss_ce: 0.2177, decode.acc_seg: 91.0271, aux.loss_ce: 0.1153, aux.acc_seg: 88.7314, loss: 0.3330
+2023-02-11 20:29:57,381 - mmseg - INFO - per class results:
+2023-02-11 20:29:57,382 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 88.58 | 92.14 |
+|  tree  | 69.96 | 82.52 |
+|  road  | 89.21 | 94.61 |
+| grass  | 78.84 | 90.59 |
+| water  | 82.73 | 88.61 |
+|  bldg  |  78.1 | 90.41 |
+|  mntn  | 38.05 | 42.13 |
+| fg obj | 72.86 | 83.64 |
++--------+-------+-------+
+2023-02-11 20:29:57,382 - mmseg - INFO - Summary:
+2023-02-11 20:29:57,382 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 88.87 | 74.79 | 83.08 |
++-------+-------+-------+
+2023-02-11 20:29:57,382 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:29:57,382 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8887, mIoU: 0.7479, mAcc: 0.8308, IoU.sky: 0.8858, IoU.tree: 0.6996, IoU.road: 0.8921, IoU.grass: 0.7884, IoU.water: 0.8273, IoU.bldg: 0.7810, IoU.mntn: 0.3805, IoU.fg obj: 0.7286, Acc.sky: 0.9214, Acc.tree: 0.8252, Acc.road: 0.9461, Acc.grass: 0.9059, Acc.water: 0.8861, Acc.bldg: 0.9041, Acc.mntn: 0.4213, Acc.fg obj: 0.8364
+2023-02-11 20:30:56,264 - mmseg - INFO - Iter [1200/40000]	lr: 9.733e-03, eta: 3:24:28, time: 0.306, data_time: 0.080, memory: 14046, decode.loss_ce: 0.2043, decode.acc_seg: 91.5419, aux.loss_ce: 0.1087, aux.acc_seg: 89.2903, loss: 0.3131
+2023-02-11 20:31:52,958 - mmseg - INFO - Iter [1400/40000]	lr: 9.688e-03, eta: 3:20:25, time: 0.283, data_time: 0.057, memory: 14046, decode.loss_ce: 0.1954, decode.acc_seg: 91.8719, aux.loss_ce: 0.1033, aux.acc_seg: 89.7562, loss: 0.2987
+2023-02-11 20:32:24,786 - mmseg - INFO - per class results:
+2023-02-11 20:32:24,787 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 88.69 | 92.94 |
+|  tree  | 69.87 | 81.48 |
+|  road  |  89.3 |  96.2 |
+| grass  | 79.11 | 88.83 |
+| water  | 86.59 | 93.05 |
+|  bldg  | 78.58 | 89.83 |
+|  mntn  | 37.79 | 44.49 |
+| fg obj | 72.91 | 82.74 |
++--------+-------+-------+
+2023-02-11 20:32:24,787 - mmseg - INFO - Summary:
+2023-02-11 20:32:24,787 - mmseg - INFO - 
++-------+-------+------+
+|  aAcc |  mIoU | mAcc |
++-------+-------+------+
+| 89.08 | 75.36 | 83.7 |
++-------+-------+------+
+2023-02-11 20:32:24,787 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8908, mIoU: 0.7536, mAcc: 0.8370, IoU.sky: 0.8869, IoU.tree: 0.6987, IoU.road: 0.8930, IoU.grass: 0.7911, IoU.water: 0.8659, IoU.bldg: 0.7858, IoU.mntn: 0.3779, IoU.fg obj: 0.7291, Acc.sky: 0.9294, Acc.tree: 0.8148, Acc.road: 0.9620, Acc.grass: 0.8883, Acc.water: 0.9305, Acc.bldg: 0.8983, Acc.mntn: 0.4449, Acc.fg obj: 0.8274
+2023-02-11 20:32:54,219 - mmseg - INFO - Iter [1600/40000]	lr: 9.643e-03, eta: 3:19:52, time: 0.318, data_time: 0.091, memory: 14046, decode.loss_ce: 0.1805, decode.acc_seg: 92.4300, aux.loss_ce: 0.0957, aux.acc_seg: 90.5084, loss: 0.2762
+2023-02-11 20:33:53,111 - mmseg - INFO - Iter [1800/40000]	lr: 9.598e-03, eta: 3:17:33, time: 0.294, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1774, decode.acc_seg: 92.5064, aux.loss_ce: 0.0951, aux.acc_seg: 90.4375, loss: 0.2724
+2023-02-11 20:34:52,028 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:34:52,029 - mmseg - INFO - Iter [2000/40000]	lr: 9.554e-03, eta: 3:15:32, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1735, decode.acc_seg: 92.8250, aux.loss_ce: 0.0925, aux.acc_seg: 90.8525, loss: 0.2660
+2023-02-11 20:34:54,320 - mmseg - INFO - per class results:
+2023-02-11 20:34:54,321 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 88.96 |  93.4 |
+|  tree  | 70.76 | 83.75 |
+|  road  | 88.31 | 95.55 |
+| grass  | 75.98 |  84.0 |
+| water  | 83.79 | 89.93 |
+|  bldg  | 78.83 | 89.31 |
+|  mntn  | 38.08 |  42.5 |
+| fg obj | 73.14 |  83.9 |
++--------+-------+-------+
+2023-02-11 20:34:54,321 - mmseg - INFO - Summary:
+2023-02-11 20:34:54,321 - mmseg - INFO - 
++------+-------+-------+
+| aAcc |  mIoU |  mAcc |
++------+-------+-------+
+| 88.9 | 74.73 | 82.79 |
++------+-------+-------+
+2023-02-11 20:34:54,321 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:34:54,321 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8890, mIoU: 0.7473, mAcc: 0.8279, IoU.sky: 0.8896, IoU.tree: 0.7076, IoU.road: 0.8831, IoU.grass: 0.7598, IoU.water: 0.8379, IoU.bldg: 0.7883, IoU.mntn: 0.3808, IoU.fg obj: 0.7314, Acc.sky: 0.9340, Acc.tree: 0.8375, Acc.road: 0.9555, Acc.grass: 0.8400, Acc.water: 0.8993, Acc.bldg: 0.8931, Acc.mntn: 0.4250, Acc.fg obj: 0.8390
+2023-02-11 20:35:51,091 - mmseg - INFO - Iter [2200/40000]	lr: 9.509e-03, eta: 3:13:44, time: 0.295, data_time: 0.069, memory: 14046, decode.loss_ce: 0.1644, decode.acc_seg: 93.1445, aux.loss_ce: 0.0875, aux.acc_seg: 91.3036, loss: 0.2518
+2023-02-11 20:36:50,015 - mmseg - INFO - Iter [2400/40000]	lr: 9.464e-03, eta: 3:12:02, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1627, decode.acc_seg: 93.2682, aux.loss_ce: 0.0861, aux.acc_seg: 91.4672, loss: 0.2488
+2023-02-11 20:37:21,657 - mmseg - INFO - per class results:
+2023-02-11 20:37:21,658 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   |  88.8 | 93.36 |
+|  tree  | 69.82 | 81.38 |
+|  road  | 89.63 | 95.82 |
+| grass  | 80.14 | 89.82 |
+| water  | 86.16 | 90.85 |
+|  bldg  | 78.24 | 92.56 |
+|  mntn  | 37.87 | 43.09 |
+| fg obj | 72.98 | 80.47 |
++--------+-------+-------+
+2023-02-11 20:37:21,658 - mmseg - INFO - Summary:
+2023-02-11 20:37:21,658 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.14 | 75.46 | 83.42 |
++-------+-------+-------+
+2023-02-11 20:37:21,658 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8914, mIoU: 0.7546, mAcc: 0.8342, IoU.sky: 0.8880, IoU.tree: 0.6982, IoU.road: 0.8963, IoU.grass: 0.8014, IoU.water: 0.8616, IoU.bldg: 0.7824, IoU.mntn: 0.3787, IoU.fg obj: 0.7298, Acc.sky: 0.9336, Acc.tree: 0.8138, Acc.road: 0.9582, Acc.grass: 0.8982, Acc.water: 0.9085, Acc.bldg: 0.9256, Acc.mntn: 0.4309, Acc.fg obj: 0.8047
+2023-02-11 20:37:51,155 - mmseg - INFO - Iter [2600/40000]	lr: 9.419e-03, eta: 3:11:31, time: 0.317, data_time: 0.090, memory: 14046, decode.loss_ce: 0.1553, decode.acc_seg: 93.6212, aux.loss_ce: 0.0821, aux.acc_seg: 91.8708, loss: 0.2374
+2023-02-11 20:38:48,110 - mmseg - INFO - Iter [2800/40000]	lr: 9.374e-03, eta: 3:09:30, time: 0.285, data_time: 0.058, memory: 14046, decode.loss_ce: 0.1523, decode.acc_seg: 93.6242, aux.loss_ce: 0.0810, aux.acc_seg: 91.9061, loss: 0.2333
+2023-02-11 20:39:47,216 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:39:47,216 - mmseg - INFO - Iter [3000/40000]	lr: 9.329e-03, eta: 3:08:04, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1495, decode.acc_seg: 93.8019, aux.loss_ce: 0.0783, aux.acc_seg: 92.1947, loss: 0.2277
+2023-02-11 20:39:49,508 - mmseg - INFO - per class results:
+2023-02-11 20:39:49,509 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 88.96 | 92.68 |
+|  tree  |  68.7 | 83.83 |
+|  road  | 84.79 | 89.68 |
+| grass  | 66.18 | 92.85 |
+| water  | 84.39 | 88.38 |
+|  bldg  | 79.48 | 89.58 |
+|  mntn  | 30.61 | 31.17 |
+| fg obj | 73.24 | 83.11 |
++--------+-------+-------+
+2023-02-11 20:39:49,509 - mmseg - INFO - Summary:
+2023-02-11 20:39:49,510 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 87.67 | 72.04 | 81.41 |
++-------+-------+-------+
+2023-02-11 20:39:49,510 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:39:49,510 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8767, mIoU: 0.7204, mAcc: 0.8141, IoU.sky: 0.8896, IoU.tree: 0.6870, IoU.road: 0.8479, IoU.grass: 0.6618, IoU.water: 0.8439, IoU.bldg: 0.7948, IoU.mntn: 0.3061, IoU.fg obj: 0.7324, Acc.sky: 0.9268, Acc.tree: 0.8383, Acc.road: 0.8968, Acc.grass: 0.9285, Acc.water: 0.8838, Acc.bldg: 0.8958, Acc.mntn: 0.3117, Acc.fg obj: 0.8311
+2023-02-11 20:40:48,525 - mmseg - INFO - Iter [3200/40000]	lr: 9.284e-03, eta: 3:07:06, time: 0.307, data_time: 0.079, memory: 14046, decode.loss_ce: 0.1506, decode.acc_seg: 93.6358, aux.loss_ce: 0.0793, aux.acc_seg: 91.9885, loss: 0.2298
+2023-02-11 20:41:47,707 - mmseg - INFO - Iter [3400/40000]	lr: 9.240e-03, eta: 3:05:46, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1445, decode.acc_seg: 93.8816, aux.loss_ce: 0.0760, aux.acc_seg: 92.2981, loss: 0.2205
+2023-02-11 20:42:17,470 - mmseg - INFO - per class results:
+2023-02-11 20:42:17,471 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   |  89.1 |  92.6 |
+|  tree  | 70.46 | 82.15 |
+|  road  | 89.52 | 94.42 |
+| grass  | 79.16 | 91.63 |
+| water  | 84.52 | 89.86 |
+|  bldg  |  78.5 | 91.97 |
+|  mntn  | 38.09 | 41.01 |
+| fg obj | 73.61 | 83.37 |
++--------+-------+-------+
+2023-02-11 20:42:17,471 - mmseg - INFO - Summary:
+2023-02-11 20:42:17,471 - mmseg - INFO - 
++------+-------+-------+
+| aAcc |  mIoU |  mAcc |
++------+-------+-------+
+| 89.2 | 75.37 | 83.38 |
++------+-------+-------+
+2023-02-11 20:42:17,471 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8920, mIoU: 0.7537, mAcc: 0.8338, IoU.sky: 0.8910, IoU.tree: 0.7046, IoU.road: 0.8952, IoU.grass: 0.7916, IoU.water: 0.8452, IoU.bldg: 0.7850, IoU.mntn: 0.3809, IoU.fg obj: 0.7361, Acc.sky: 0.9260, Acc.tree: 0.8215, Acc.road: 0.9442, Acc.grass: 0.9163, Acc.water: 0.8986, Acc.bldg: 0.9197, Acc.mntn: 0.4101, Acc.fg obj: 0.8337
+2023-02-11 20:42:47,057 - mmseg - INFO - Iter [3600/40000]	lr: 9.195e-03, eta: 3:05:13, time: 0.319, data_time: 0.091, memory: 14046, decode.loss_ce: 0.1346, decode.acc_seg: 94.3088, aux.loss_ce: 0.0705, aux.acc_seg: 92.8829, loss: 0.2051
+2023-02-11 20:43:46,092 - mmseg - INFO - Iter [3800/40000]	lr: 9.150e-03, eta: 3:03:53, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1383, decode.acc_seg: 94.1097, aux.loss_ce: 0.0722, aux.acc_seg: 92.6606, loss: 0.2105
+2023-02-11 20:44:45,013 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:44:45,013 - mmseg - INFO - Iter [4000/40000]	lr: 9.105e-03, eta: 3:02:33, time: 0.295, data_time: 0.067, memory: 14046, decode.loss_ce: 0.1362, decode.acc_seg: 94.2671, aux.loss_ce: 0.0716, aux.acc_seg: 92.7903, loss: 0.2079
+2023-02-11 20:44:47,061 - mmseg - INFO - per class results:
+2023-02-11 20:44:47,062 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.11 |  93.0 |
+|  tree  | 71.08 | 83.66 |
+|  road  | 89.72 | 95.77 |
+| grass  | 81.76 | 90.72 |
+| water  | 86.26 | 91.37 |
+|  bldg  | 78.95 | 90.89 |
+|  mntn  | 38.87 | 46.59 |
+| fg obj | 73.38 | 82.14 |
++--------+-------+-------+
+2023-02-11 20:44:47,062 - mmseg - INFO - Summary:
+2023-02-11 20:44:47,062 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.46 | 76.14 | 84.27 |
++-------+-------+-------+
+2023-02-11 20:44:47,063 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:44:47,063 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8946, mIoU: 0.7614, mAcc: 0.8427, IoU.sky: 0.8911, IoU.tree: 0.7108, IoU.road: 0.8972, IoU.grass: 0.8176, IoU.water: 0.8626, IoU.bldg: 0.7895, IoU.mntn: 0.3887, IoU.fg obj: 0.7338, Acc.sky: 0.9300, Acc.tree: 0.8366, Acc.road: 0.9577, Acc.grass: 0.9072, Acc.water: 0.9137, Acc.bldg: 0.9089, Acc.mntn: 0.4659, Acc.fg obj: 0.8214
+2023-02-11 20:45:43,976 - mmseg - INFO - Iter [4200/40000]	lr: 9.060e-03, eta: 3:01:16, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1291, decode.acc_seg: 94.4946, aux.loss_ce: 0.0672, aux.acc_seg: 93.1527, loss: 0.1963
+2023-02-11 20:46:42,944 - mmseg - INFO - Iter [4400/40000]	lr: 9.015e-03, eta: 3:00:01, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1306, decode.acc_seg: 94.4868, aux.loss_ce: 0.0671, aux.acc_seg: 93.1970, loss: 0.1978
+2023-02-11 20:47:14,729 - mmseg - INFO - per class results:
+2023-02-11 20:47:14,730 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.08 | 92.63 |
+|  tree  | 70.43 | 83.51 |
+|  road  | 89.43 | 95.38 |
+| grass  | 80.65 | 89.99 |
+| water  | 86.19 | 91.21 |
+|  bldg  | 78.06 | 91.66 |
+|  mntn  | 36.73 | 42.99 |
+| fg obj | 72.94 | 80.95 |
++--------+-------+-------+
+2023-02-11 20:47:14,730 - mmseg - INFO - Summary:
+2023-02-11 20:47:14,731 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.14 | 75.44 | 83.54 |
++-------+-------+-------+
+2023-02-11 20:47:14,731 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8914, mIoU: 0.7544, mAcc: 0.8354, IoU.sky: 0.8908, IoU.tree: 0.7043, IoU.road: 0.8943, IoU.grass: 0.8065, IoU.water: 0.8619, IoU.bldg: 0.7806, IoU.mntn: 0.3673, IoU.fg obj: 0.7294, Acc.sky: 0.9263, Acc.tree: 0.8351, Acc.road: 0.9538, Acc.grass: 0.8999, Acc.water: 0.9121, Acc.bldg: 0.9166, Acc.mntn: 0.4299, Acc.fg obj: 0.8095
+2023-02-11 20:47:44,357 - mmseg - INFO - Iter [4600/40000]	lr: 8.969e-03, eta: 2:59:23, time: 0.318, data_time: 0.090, memory: 14046, decode.loss_ce: 0.1305, decode.acc_seg: 94.5625, aux.loss_ce: 0.0670, aux.acc_seg: 93.2787, loss: 0.1975
+2023-02-11 20:48:43,630 - mmseg - INFO - Iter [4800/40000]	lr: 8.924e-03, eta: 2:58:11, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1274, decode.acc_seg: 94.7449, aux.loss_ce: 0.0657, aux.acc_seg: 93.4594, loss: 0.1931
+2023-02-11 20:49:40,728 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:49:40,729 - mmseg - INFO - Iter [5000/40000]	lr: 8.879e-03, eta: 2:56:45, time: 0.285, data_time: 0.057, memory: 14046, decode.loss_ce: 0.1258, decode.acc_seg: 94.6530, aux.loss_ce: 0.0647, aux.acc_seg: 93.4324, loss: 0.1905
+2023-02-11 20:49:43,072 - mmseg - INFO - per class results:
+2023-02-11 20:49:43,073 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 88.87 | 93.67 |
+|  tree  | 70.59 | 83.25 |
+|  road  | 89.02 | 95.46 |
+| grass  | 79.82 | 91.45 |
+| water  | 85.39 | 90.17 |
+|  bldg  | 79.43 | 90.37 |
+|  mntn  | 40.14 | 44.75 |
+| fg obj | 73.85 |  82.4 |
++--------+-------+-------+
+2023-02-11 20:49:43,073 - mmseg - INFO - Summary:
+2023-02-11 20:49:43,073 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.35 | 75.89 | 83.94 |
++-------+-------+-------+
+2023-02-11 20:49:43,074 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:49:43,074 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8935, mIoU: 0.7589, mAcc: 0.8394, IoU.sky: 0.8887, IoU.tree: 0.7059, IoU.road: 0.8902, IoU.grass: 0.7982, IoU.water: 0.8539, IoU.bldg: 0.7943, IoU.mntn: 0.4014, IoU.fg obj: 0.7385, Acc.sky: 0.9367, Acc.tree: 0.8325, Acc.road: 0.9546, Acc.grass: 0.9145, Acc.water: 0.9017, Acc.bldg: 0.9037, Acc.mntn: 0.4475, Acc.fg obj: 0.8240
+2023-02-11 20:50:42,276 - mmseg - INFO - Iter [5200/40000]	lr: 8.834e-03, eta: 2:55:51, time: 0.308, data_time: 0.080, memory: 14046, decode.loss_ce: 0.1213, decode.acc_seg: 94.8085, aux.loss_ce: 0.0628, aux.acc_seg: 93.5636, loss: 0.1842
+2023-02-11 20:51:41,461 - mmseg - INFO - Iter [5400/40000]	lr: 8.789e-03, eta: 2:54:41, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1214, decode.acc_seg: 94.8127, aux.loss_ce: 0.0626, aux.acc_seg: 93.6165, loss: 0.1840
+2023-02-11 20:52:13,338 - mmseg - INFO - per class results:
+2023-02-11 20:52:13,339 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 88.82 | 92.74 |
+|  tree  | 70.55 | 84.01 |
+|  road  | 89.68 | 95.24 |
+| grass  | 80.08 |  90.5 |
+| water  | 86.46 |  92.1 |
+|  bldg  | 79.31 | 90.79 |
+|  mntn  | 36.44 | 41.38 |
+| fg obj |  74.2 | 83.16 |
++--------+-------+-------+
+2023-02-11 20:52:13,339 - mmseg - INFO - Summary:
+2023-02-11 20:52:13,340 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.43 | 75.69 | 83.74 |
++-------+-------+-------+
+2023-02-11 20:52:13,340 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8943, mIoU: 0.7569, mAcc: 0.8374, IoU.sky: 0.8882, IoU.tree: 0.7055, IoU.road: 0.8968, IoU.grass: 0.8008, IoU.water: 0.8646, IoU.bldg: 0.7931, IoU.mntn: 0.3644, IoU.fg obj: 0.7420, Acc.sky: 0.9274, Acc.tree: 0.8401, Acc.road: 0.9524, Acc.grass: 0.9050, Acc.water: 0.9210, Acc.bldg: 0.9079, Acc.mntn: 0.4138, Acc.fg obj: 0.8316
+2023-02-11 20:52:40,853 - mmseg - INFO - Iter [5600/40000]	lr: 8.744e-03, eta: 2:53:34, time: 0.298, data_time: 0.070, memory: 14046, decode.loss_ce: 0.1175, decode.acc_seg: 94.9835, aux.loss_ce: 0.0597, aux.acc_seg: 93.8816, loss: 0.1772
+2023-02-11 20:53:39,979 - mmseg - INFO - Iter [5800/40000]	lr: 8.698e-03, eta: 2:52:25, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1191, decode.acc_seg: 94.9016, aux.loss_ce: 0.0610, aux.acc_seg: 93.7275, loss: 0.1800
+2023-02-11 20:54:39,065 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:54:39,065 - mmseg - INFO - Iter [6000/40000]	lr: 8.653e-03, eta: 2:51:16, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1250, decode.acc_seg: 94.7332, aux.loss_ce: 0.0649, aux.acc_seg: 93.4381, loss: 0.1899
+2023-02-11 20:54:41,342 - mmseg - INFO - per class results:
+2023-02-11 20:54:41,343 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 88.57 | 92.31 |
+|  tree  | 71.75 | 85.61 |
+|  road  | 89.21 | 94.76 |
+| grass  |  79.0 | 91.37 |
+| water  | 88.64 | 94.25 |
+|  bldg  |  78.7 | 90.85 |
+|  mntn  | 39.26 |  44.0 |
+| fg obj |  73.1 | 80.99 |
++--------+-------+-------+
+2023-02-11 20:54:41,343 - mmseg - INFO - Summary:
+2023-02-11 20:54:41,343 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.29 | 76.03 | 84.27 |
++-------+-------+-------+
+2023-02-11 20:54:41,344 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:54:41,344 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8929, mIoU: 0.7603, mAcc: 0.8427, IoU.sky: 0.8857, IoU.tree: 0.7175, IoU.road: 0.8921, IoU.grass: 0.7900, IoU.water: 0.8864, IoU.bldg: 0.7870, IoU.mntn: 0.3926, IoU.fg obj: 0.7310, Acc.sky: 0.9231, Acc.tree: 0.8561, Acc.road: 0.9476, Acc.grass: 0.9137, Acc.water: 0.9425, Acc.bldg: 0.9085, Acc.mntn: 0.4400, Acc.fg obj: 0.8099
+2023-02-11 20:55:40,372 - mmseg - INFO - Iter [6200/40000]	lr: 8.608e-03, eta: 2:50:21, time: 0.307, data_time: 0.079, memory: 14046, decode.loss_ce: 0.1199, decode.acc_seg: 94.9238, aux.loss_ce: 0.0623, aux.acc_seg: 93.6972, loss: 0.1822
+2023-02-11 20:56:37,367 - mmseg - INFO - Iter [6400/40000]	lr: 8.562e-03, eta: 2:49:02, time: 0.285, data_time: 0.057, memory: 14046, decode.loss_ce: 0.1152, decode.acc_seg: 95.0741, aux.loss_ce: 0.0588, aux.acc_seg: 93.9794, loss: 0.1739
+2023-02-11 20:57:09,296 - mmseg - INFO - per class results:
+2023-02-11 20:57:09,297 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.06 | 92.91 |
+|  tree  | 70.51 | 83.01 |
+|  road  | 89.42 | 95.65 |
+| grass  | 79.86 | 89.88 |
+| water  | 87.02 | 91.25 |
+|  bldg  | 78.35 | 91.74 |
+|  mntn  | 37.14 | 43.73 |
+| fg obj | 73.79 | 81.36 |
++--------+-------+-------+
+2023-02-11 20:57:09,297 - mmseg - INFO - Summary:
+2023-02-11 20:57:09,298 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.27 | 75.64 | 83.69 |
++-------+-------+-------+
+2023-02-11 20:57:09,298 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8927, mIoU: 0.7564, mAcc: 0.8369, IoU.sky: 0.8906, IoU.tree: 0.7051, IoU.road: 0.8942, IoU.grass: 0.7986, IoU.water: 0.8702, IoU.bldg: 0.7835, IoU.mntn: 0.3714, IoU.fg obj: 0.7379, Acc.sky: 0.9291, Acc.tree: 0.8301, Acc.road: 0.9565, Acc.grass: 0.8988, Acc.water: 0.9125, Acc.bldg: 0.9174, Acc.mntn: 0.4373, Acc.fg obj: 0.8136
+2023-02-11 20:57:38,898 - mmseg - INFO - Iter [6600/40000]	lr: 8.517e-03, eta: 2:48:19, time: 0.319, data_time: 0.092, memory: 14046, decode.loss_ce: 0.1176, decode.acc_seg: 95.0981, aux.loss_ce: 0.0603, aux.acc_seg: 93.9847, loss: 0.1779
+2023-02-11 20:58:38,097 - mmseg - INFO - Iter [6800/40000]	lr: 8.472e-03, eta: 2:47:12, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1126, decode.acc_seg: 95.1787, aux.loss_ce: 0.0570, aux.acc_seg: 94.1403, loss: 0.1696
+2023-02-11 20:59:35,086 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:59:35,086 - mmseg - INFO - Iter [7000/40000]	lr: 8.426e-03, eta: 2:45:56, time: 0.285, data_time: 0.057, memory: 14046, decode.loss_ce: 0.1143, decode.acc_seg: 95.1631, aux.loss_ce: 0.0580, aux.acc_seg: 94.0739, loss: 0.1723
+2023-02-11 20:59:37,338 - mmseg - INFO - per class results:
+2023-02-11 20:59:37,339 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.19 |  92.9 |
+|  tree  | 71.09 | 83.04 |
+|  road  | 88.91 | 95.02 |
+| grass  | 80.35 | 90.13 |
+| water  | 84.12 | 88.33 |
+|  bldg  | 79.23 |  90.8 |
+|  mntn  | 38.85 | 44.74 |
+| fg obj | 73.47 | 84.05 |
++--------+-------+-------+
+2023-02-11 20:59:37,339 - mmseg - INFO - Summary:
+2023-02-11 20:59:37,339 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.29 | 75.65 | 83.63 |
++-------+-------+-------+
+2023-02-11 20:59:37,339 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 20:59:37,339 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8929, mIoU: 0.7565, mAcc: 0.8363, IoU.sky: 0.8919, IoU.tree: 0.7109, IoU.road: 0.8891, IoU.grass: 0.8035, IoU.water: 0.8412, IoU.bldg: 0.7923, IoU.mntn: 0.3885, IoU.fg obj: 0.7347, Acc.sky: 0.9290, Acc.tree: 0.8304, Acc.road: 0.9502, Acc.grass: 0.9013, Acc.water: 0.8833, Acc.bldg: 0.9080, Acc.mntn: 0.4474, Acc.fg obj: 0.8405
+2023-02-11 21:00:36,480 - mmseg - INFO - Iter [7200/40000]	lr: 8.381e-03, eta: 2:45:00, time: 0.307, data_time: 0.079, memory: 14046, decode.loss_ce: 0.1141, decode.acc_seg: 95.2008, aux.loss_ce: 0.0577, aux.acc_seg: 94.1398, loss: 0.1718
+2023-02-11 21:01:35,722 - mmseg - INFO - Iter [7400/40000]	lr: 8.335e-03, eta: 2:43:55, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1213, decode.acc_seg: 94.8856, aux.loss_ce: 0.0624, aux.acc_seg: 93.6557, loss: 0.1837
+2023-02-11 21:02:07,544 - mmseg - INFO - per class results:
+2023-02-11 21:02:07,545 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.17 | 93.11 |
+|  tree  |  70.9 | 84.95 |
+|  road  | 89.34 | 94.91 |
+| grass  | 79.69 | 90.49 |
+| water  | 86.03 |  91.0 |
+|  bldg  | 78.59 | 90.59 |
+|  mntn  | 40.27 | 45.53 |
+| fg obj | 73.59 | 81.89 |
++--------+-------+-------+
+2023-02-11 21:02:07,545 - mmseg - INFO - Summary:
+2023-02-11 21:02:07,545 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.29 | 75.95 | 84.06 |
++-------+-------+-------+
+2023-02-11 21:02:07,545 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8929, mIoU: 0.7595, mAcc: 0.8406, IoU.sky: 0.8917, IoU.tree: 0.7090, IoU.road: 0.8934, IoU.grass: 0.7969, IoU.water: 0.8603, IoU.bldg: 0.7859, IoU.mntn: 0.4027, IoU.fg obj: 0.7359, Acc.sky: 0.9311, Acc.tree: 0.8495, Acc.road: 0.9491, Acc.grass: 0.9049, Acc.water: 0.9100, Acc.bldg: 0.9059, Acc.mntn: 0.4553, Acc.fg obj: 0.8189
+2023-02-11 21:02:37,108 - mmseg - INFO - Iter [7600/40000]	lr: 8.290e-03, eta: 2:43:08, time: 0.318, data_time: 0.090, memory: 14046, decode.loss_ce: 0.1110, decode.acc_seg: 95.2256, aux.loss_ce: 0.0566, aux.acc_seg: 94.1484, loss: 0.1676
+2023-02-11 21:03:34,121 - mmseg - INFO - Iter [7800/40000]	lr: 8.244e-03, eta: 2:41:54, time: 0.285, data_time: 0.057, memory: 14046, decode.loss_ce: 0.1113, decode.acc_seg: 95.2099, aux.loss_ce: 0.0562, aux.acc_seg: 94.1916, loss: 0.1676
+2023-02-11 21:04:33,237 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:04:33,237 - mmseg - INFO - Iter [8000/40000]	lr: 8.199e-03, eta: 2:40:49, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1266, decode.acc_seg: 94.7963, aux.loss_ce: 0.0658, aux.acc_seg: 93.4578, loss: 0.1924
+2023-02-11 21:04:35,546 - mmseg - INFO - per class results:
+2023-02-11 21:04:35,547 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 88.97 | 93.59 |
+|  tree  | 68.87 | 80.47 |
+|  road  | 89.21 | 96.16 |
+| grass  | 79.12 | 89.91 |
+| water  | 84.23 | 88.15 |
+|  bldg  |  77.3 |  92.4 |
+|  mntn  | 41.58 |  47.0 |
+| fg obj |  72.2 | 78.72 |
++--------+-------+-------+
+2023-02-11 21:04:35,547 - mmseg - INFO - Summary:
+2023-02-11 21:04:35,548 - mmseg - INFO - 
++-------+-------+------+
+|  aAcc |  mIoU | mAcc |
++-------+-------+------+
+| 88.78 | 75.18 | 83.3 |
++-------+-------+------+
+2023-02-11 21:04:35,548 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:04:35,548 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8878, mIoU: 0.7518, mAcc: 0.8330, IoU.sky: 0.8897, IoU.tree: 0.6887, IoU.road: 0.8921, IoU.grass: 0.7912, IoU.water: 0.8423, IoU.bldg: 0.7730, IoU.mntn: 0.4158, IoU.fg obj: 0.7220, Acc.sky: 0.9359, Acc.tree: 0.8047, Acc.road: 0.9616, Acc.grass: 0.8991, Acc.water: 0.8815, Acc.bldg: 0.9240, Acc.mntn: 0.4700, Acc.fg obj: 0.7872
+2023-02-11 21:05:34,716 - mmseg - INFO - Iter [8200/40000]	lr: 8.153e-03, eta: 2:39:53, time: 0.307, data_time: 0.079, memory: 14046, decode.loss_ce: 0.1120, decode.acc_seg: 95.1885, aux.loss_ce: 0.0581, aux.acc_seg: 94.0450, loss: 0.1702
+2023-02-11 21:06:31,856 - mmseg - INFO - Iter [8400/40000]	lr: 8.108e-03, eta: 2:38:40, time: 0.286, data_time: 0.058, memory: 14046, decode.loss_ce: 0.1196, decode.acc_seg: 94.9076, aux.loss_ce: 0.0624, aux.acc_seg: 93.6532, loss: 0.1819
+2023-02-11 21:07:03,733 - mmseg - INFO - per class results:
+2023-02-11 21:07:03,734 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.44 |  93.5 |
+|  tree  | 70.87 | 82.74 |
+|  road  | 89.54 |  95.9 |
+| grass  |  80.6 | 90.14 |
+| water  | 85.03 | 89.11 |
+|  bldg  |  78.7 | 91.29 |
+|  mntn  |  39.7 | 46.57 |
+| fg obj | 73.19 | 81.84 |
++--------+-------+-------+
+2023-02-11 21:07:03,734 - mmseg - INFO - Summary:
+2023-02-11 21:07:03,734 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.34 | 75.89 | 83.89 |
++-------+-------+-------+
+2023-02-11 21:07:03,735 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8934, mIoU: 0.7589, mAcc: 0.8389, IoU.sky: 0.8944, IoU.tree: 0.7087, IoU.road: 0.8954, IoU.grass: 0.8060, IoU.water: 0.8503, IoU.bldg: 0.7870, IoU.mntn: 0.3970, IoU.fg obj: 0.7319, Acc.sky: 0.9350, Acc.tree: 0.8274, Acc.road: 0.9590, Acc.grass: 0.9014, Acc.water: 0.8911, Acc.bldg: 0.9129, Acc.mntn: 0.4657, Acc.fg obj: 0.8184
+2023-02-11 21:07:33,394 - mmseg - INFO - Iter [8600/40000]	lr: 8.062e-03, eta: 2:37:53, time: 0.319, data_time: 0.091, memory: 14046, decode.loss_ce: 0.1099, decode.acc_seg: 95.3203, aux.loss_ce: 0.0556, aux.acc_seg: 94.3099, loss: 0.1655
+2023-02-11 21:08:32,554 - mmseg - INFO - Iter [8800/40000]	lr: 8.016e-03, eta: 2:36:49, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1067, decode.acc_seg: 95.4722, aux.loss_ce: 0.0539, aux.acc_seg: 94.4936, loss: 0.1607
+2023-02-11 21:09:31,649 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:09:31,649 - mmseg - INFO - Iter [9000/40000]	lr: 7.971e-03, eta: 2:35:44, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1047, decode.acc_seg: 95.4951, aux.loss_ce: 0.0525, aux.acc_seg: 94.5853, loss: 0.1572
+2023-02-11 21:09:33,943 - mmseg - INFO - per class results:
+2023-02-11 21:09:33,944 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.28 | 92.58 |
+|  tree  | 71.47 | 84.23 |
+|  road  | 89.71 | 95.42 |
+| grass  | 80.87 | 91.18 |
+| water  | 85.85 | 90.42 |
+|  bldg  | 78.59 | 91.84 |
+|  mntn  | 39.69 |  46.1 |
+| fg obj | 73.27 | 81.28 |
++--------+-------+-------+
+2023-02-11 21:09:33,944 - mmseg - INFO - Summary:
+2023-02-11 21:09:33,944 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.41 | 76.09 | 84.13 |
++-------+-------+-------+
+2023-02-11 21:09:33,944 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:09:33,944 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8941, mIoU: 0.7609, mAcc: 0.8413, IoU.sky: 0.8928, IoU.tree: 0.7147, IoU.road: 0.8971, IoU.grass: 0.8087, IoU.water: 0.8585, IoU.bldg: 0.7859, IoU.mntn: 0.3969, IoU.fg obj: 0.7327, Acc.sky: 0.9258, Acc.tree: 0.8423, Acc.road: 0.9542, Acc.grass: 0.9118, Acc.water: 0.9042, Acc.bldg: 0.9184, Acc.mntn: 0.4610, Acc.fg obj: 0.8128
+2023-02-11 21:10:30,982 - mmseg - INFO - Iter [9200/40000]	lr: 7.925e-03, eta: 2:34:41, time: 0.297, data_time: 0.069, memory: 14046, decode.loss_ce: 0.1033, decode.acc_seg: 95.6026, aux.loss_ce: 0.0517, aux.acc_seg: 94.7139, loss: 0.1550
+2023-02-11 21:11:30,078 - mmseg - INFO - Iter [9400/40000]	lr: 7.879e-03, eta: 2:33:37, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1038, decode.acc_seg: 95.5854, aux.loss_ce: 0.0514, aux.acc_seg: 94.7131, loss: 0.1552
+2023-02-11 21:12:01,829 - mmseg - INFO - per class results:
+2023-02-11 21:12:01,830 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.25 | 93.41 |
+|  tree  | 70.43 | 80.97 |
+|  road  | 89.59 | 95.99 |
+| grass  | 81.07 | 91.13 |
+| water  | 85.19 | 90.85 |
+|  bldg  | 78.66 | 91.75 |
+|  mntn  | 40.41 | 50.61 |
+| fg obj | 73.45 | 81.53 |
++--------+-------+-------+
+2023-02-11 21:12:01,830 - mmseg - INFO - Summary:
+2023-02-11 21:12:01,830 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.34 | 76.01 | 84.53 |
++-------+-------+-------+
+2023-02-11 21:12:01,830 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8934, mIoU: 0.7601, mAcc: 0.8453, IoU.sky: 0.8925, IoU.tree: 0.7043, IoU.road: 0.8959, IoU.grass: 0.8107, IoU.water: 0.8519, IoU.bldg: 0.7866, IoU.mntn: 0.4041, IoU.fg obj: 0.7345, Acc.sky: 0.9341, Acc.tree: 0.8097, Acc.road: 0.9599, Acc.grass: 0.9113, Acc.water: 0.9085, Acc.bldg: 0.9175, Acc.mntn: 0.5061, Acc.fg obj: 0.8153
+2023-02-11 21:12:31,462 - mmseg - INFO - Iter [9600/40000]	lr: 7.834e-03, eta: 2:32:47, time: 0.318, data_time: 0.091, memory: 14046, decode.loss_ce: 0.1014, decode.acc_seg: 95.6482, aux.loss_ce: 0.0503, aux.acc_seg: 94.8167, loss: 0.1517
+2023-02-11 21:13:28,450 - mmseg - INFO - Iter [9800/40000]	lr: 7.788e-03, eta: 2:31:37, time: 0.285, data_time: 0.057, memory: 14046, decode.loss_ce: 0.1033, decode.acc_seg: 95.5521, aux.loss_ce: 0.0517, aux.acc_seg: 94.6531, loss: 0.1550
+2023-02-11 21:14:27,612 - mmseg - INFO - Saving checkpoint at 10000 iterations
+2023-02-11 21:14:28,643 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:14:28,643 - mmseg - INFO - Iter [10000/40000]	lr: 7.742e-03, eta: 2:30:36, time: 0.301, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0996, decode.acc_seg: 95.7041, aux.loss_ce: 0.0499, aux.acc_seg: 94.8531, loss: 0.1495
+2023-02-11 21:14:30,882 - mmseg - INFO - per class results:
+2023-02-11 21:14:30,883 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.15 |  92.7 |
+|  tree  | 71.24 | 83.22 |
+|  road  | 89.06 |  95.3 |
+| grass  | 77.07 |  89.1 |
+| water  | 83.03 | 90.26 |
+|  bldg  | 79.03 | 91.95 |
+|  mntn  | 40.88 | 47.45 |
+| fg obj | 73.43 | 81.28 |
++--------+-------+-------+
+2023-02-11 21:14:30,883 - mmseg - INFO - Summary:
+2023-02-11 21:14:30,883 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.16 | 75.36 | 83.91 |
++-------+-------+-------+
+2023-02-11 21:14:30,883 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:14:30,884 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8916, mIoU: 0.7536, mAcc: 0.8391, IoU.sky: 0.8915, IoU.tree: 0.7124, IoU.road: 0.8906, IoU.grass: 0.7707, IoU.water: 0.8303, IoU.bldg: 0.7903, IoU.mntn: 0.4088, IoU.fg obj: 0.7343, Acc.sky: 0.9270, Acc.tree: 0.8322, Acc.road: 0.9530, Acc.grass: 0.8910, Acc.water: 0.9026, Acc.bldg: 0.9195, Acc.mntn: 0.4745, Acc.fg obj: 0.8128
+2023-02-11 21:15:30,017 - mmseg - INFO - Iter [10200/40000]	lr: 7.696e-03, eta: 2:29:39, time: 0.307, data_time: 0.079, memory: 14046, decode.loss_ce: 0.1030, decode.acc_seg: 95.7226, aux.loss_ce: 0.0510, aux.acc_seg: 94.8741, loss: 0.1540
+2023-02-11 21:16:29,068 - mmseg - INFO - Iter [10400/40000]	lr: 7.650e-03, eta: 2:28:36, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1004, decode.acc_seg: 95.7039, aux.loss_ce: 0.0495, aux.acc_seg: 94.8805, loss: 0.1498
+2023-02-11 21:16:58,696 - mmseg - INFO - per class results:
+2023-02-11 21:16:58,697 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.38 | 92.85 |
+|  tree  | 71.18 | 84.05 |
+|  road  | 89.41 |  95.5 |
+| grass  |  81.4 | 91.38 |
+| water  | 84.36 | 88.71 |
+|  bldg  | 79.45 | 91.29 |
+|  mntn  | 39.22 | 46.53 |
+| fg obj | 73.91 | 82.55 |
++--------+-------+-------+
+2023-02-11 21:16:58,697 - mmseg - INFO - Summary:
+2023-02-11 21:16:58,697 - mmseg - INFO - 
++------+-------+-------+
+| aAcc |  mIoU |  mAcc |
++------+-------+-------+
+| 89.5 | 76.04 | 84.11 |
++------+-------+-------+
+2023-02-11 21:16:58,697 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8950, mIoU: 0.7604, mAcc: 0.8411, IoU.sky: 0.8938, IoU.tree: 0.7118, IoU.road: 0.8941, IoU.grass: 0.8140, IoU.water: 0.8436, IoU.bldg: 0.7945, IoU.mntn: 0.3922, IoU.fg obj: 0.7391, Acc.sky: 0.9285, Acc.tree: 0.8405, Acc.road: 0.9550, Acc.grass: 0.9138, Acc.water: 0.8871, Acc.bldg: 0.9129, Acc.mntn: 0.4653, Acc.fg obj: 0.8255
+2023-02-11 21:17:28,256 - mmseg - INFO - Iter [10600/40000]	lr: 7.604e-03, eta: 2:27:45, time: 0.318, data_time: 0.090, memory: 14046, decode.loss_ce: 0.1029, decode.acc_seg: 95.6530, aux.loss_ce: 0.0510, aux.acc_seg: 94.8174, loss: 0.1539
+2023-02-11 21:18:27,397 - mmseg - INFO - Iter [10800/40000]	lr: 7.558e-03, eta: 2:26:41, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1060, decode.acc_seg: 95.5299, aux.loss_ce: 0.0536, aux.acc_seg: 94.5848, loss: 0.1596
+2023-02-11 21:19:26,534 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:19:26,534 - mmseg - INFO - Iter [11000/40000]	lr: 7.512e-03, eta: 2:25:38, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1031, decode.acc_seg: 95.5877, aux.loss_ce: 0.0523, aux.acc_seg: 94.6124, loss: 0.1554
+2023-02-11 21:19:28,825 - mmseg - INFO - per class results:
+2023-02-11 21:19:28,826 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.09 | 93.23 |
+|  tree  | 69.89 | 81.03 |
+|  road  | 88.54 | 94.91 |
+| grass  | 78.52 | 89.44 |
+| water  |  85.1 | 89.89 |
+|  bldg  | 78.05 | 91.85 |
+|  mntn  | 40.12 | 48.67 |
+| fg obj | 73.23 | 81.64 |
++--------+-------+-------+
+2023-02-11 21:19:28,826 - mmseg - INFO - Summary:
+2023-02-11 21:19:28,826 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 88.92 | 75.32 | 83.83 |
++-------+-------+-------+
+2023-02-11 21:19:28,827 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:19:28,827 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8892, mIoU: 0.7532, mAcc: 0.8383, IoU.sky: 0.8909, IoU.tree: 0.6989, IoU.road: 0.8854, IoU.grass: 0.7852, IoU.water: 0.8510, IoU.bldg: 0.7805, IoU.mntn: 0.4012, IoU.fg obj: 0.7323, Acc.sky: 0.9323, Acc.tree: 0.8103, Acc.road: 0.9491, Acc.grass: 0.8944, Acc.water: 0.8989, Acc.bldg: 0.9185, Acc.mntn: 0.4867, Acc.fg obj: 0.8164
+2023-02-11 21:20:25,877 - mmseg - INFO - Iter [11200/40000]	lr: 7.466e-03, eta: 2:24:35, time: 0.297, data_time: 0.069, memory: 14046, decode.loss_ce: 0.1166, decode.acc_seg: 95.1869, aux.loss_ce: 0.0609, aux.acc_seg: 93.9243, loss: 0.1774
+2023-02-11 21:21:25,081 - mmseg - INFO - Iter [11400/40000]	lr: 7.420e-03, eta: 2:23:32, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1047, decode.acc_seg: 95.6160, aux.loss_ce: 0.0535, aux.acc_seg: 94.6423, loss: 0.1582
+2023-02-11 21:21:56,852 - mmseg - INFO - per class results:
+2023-02-11 21:21:56,852 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.43 | 93.33 |
+|  tree  | 69.28 | 81.56 |
+|  road  | 89.17 | 95.09 |
+| grass  | 79.44 | 89.64 |
+| water  | 84.47 | 89.88 |
+|  bldg  | 78.41 | 92.35 |
+|  mntn  | 35.38 | 40.25 |
+| fg obj | 73.68 | 81.75 |
++--------+-------+-------+
+2023-02-11 21:21:56,853 - mmseg - INFO - Summary:
+2023-02-11 21:21:56,853 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.07 | 74.91 | 82.98 |
++-------+-------+-------+
+2023-02-11 21:21:56,853 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8907, mIoU: 0.7491, mAcc: 0.8298, IoU.sky: 0.8943, IoU.tree: 0.6928, IoU.road: 0.8917, IoU.grass: 0.7944, IoU.water: 0.8447, IoU.bldg: 0.7841, IoU.mntn: 0.3538, IoU.fg obj: 0.7368, Acc.sky: 0.9333, Acc.tree: 0.8156, Acc.road: 0.9509, Acc.grass: 0.8964, Acc.water: 0.8988, Acc.bldg: 0.9235, Acc.mntn: 0.4025, Acc.fg obj: 0.8175
+2023-02-11 21:22:26,393 - mmseg - INFO - Iter [11600/40000]	lr: 7.374e-03, eta: 2:22:40, time: 0.318, data_time: 0.090, memory: 14046, decode.loss_ce: 0.1043, decode.acc_seg: 95.6196, aux.loss_ce: 0.0528, aux.acc_seg: 94.7026, loss: 0.1571
+2023-02-11 21:23:25,479 - mmseg - INFO - Iter [11800/40000]	lr: 7.328e-03, eta: 2:21:37, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0991, decode.acc_seg: 95.8402, aux.loss_ce: 0.0502, aux.acc_seg: 94.9940, loss: 0.1493
+2023-02-11 21:24:22,393 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:24:22,394 - mmseg - INFO - Iter [12000/40000]	lr: 7.282e-03, eta: 2:20:29, time: 0.285, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0970, decode.acc_seg: 95.8643, aux.loss_ce: 0.0484, aux.acc_seg: 95.0743, loss: 0.1454
+2023-02-11 21:24:24,661 - mmseg - INFO - per class results:
+2023-02-11 21:24:24,662 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.38 |  93.2 |
+|  tree  | 71.85 | 85.04 |
+|  road  | 89.31 | 95.53 |
+| grass  | 80.39 | 91.71 |
+| water  |  84.2 | 89.15 |
+|  bldg  | 79.59 | 90.78 |
+|  mntn  | 38.99 |  41.9 |
+| fg obj | 74.04 |  82.5 |
++--------+-------+-------+
+2023-02-11 21:24:24,662 - mmseg - INFO - Summary:
+2023-02-11 21:24:24,662 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.57 | 75.97 | 83.73 |
++-------+-------+-------+
+2023-02-11 21:24:24,662 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:24:24,662 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8957, mIoU: 0.7597, mAcc: 0.8373, IoU.sky: 0.8938, IoU.tree: 0.7185, IoU.road: 0.8931, IoU.grass: 0.8039, IoU.water: 0.8420, IoU.bldg: 0.7959, IoU.mntn: 0.3899, IoU.fg obj: 0.7404, Acc.sky: 0.9320, Acc.tree: 0.8504, Acc.road: 0.9553, Acc.grass: 0.9171, Acc.water: 0.8915, Acc.bldg: 0.9078, Acc.mntn: 0.4190, Acc.fg obj: 0.8250
+2023-02-11 21:25:23,693 - mmseg - INFO - Iter [12200/40000]	lr: 7.236e-03, eta: 2:19:31, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0954, decode.acc_seg: 95.8073, aux.loss_ce: 0.0480, aux.acc_seg: 94.9853, loss: 0.1435
+2023-02-11 21:26:22,822 - mmseg - INFO - Iter [12400/40000]	lr: 7.189e-03, eta: 2:18:29, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0976, decode.acc_seg: 95.8941, aux.loss_ce: 0.0484, aux.acc_seg: 95.1118, loss: 0.1460
+2023-02-11 21:26:55,064 - mmseg - INFO - per class results:
+2023-02-11 21:26:55,065 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.21 | 92.58 |
+|  tree  | 70.98 | 83.28 |
+|  road  | 89.02 | 95.12 |
+| grass  | 80.59 | 90.79 |
+| water  | 84.32 | 88.49 |
+|  bldg  | 78.89 |  92.3 |
+|  mntn  | 38.51 | 43.81 |
+| fg obj | 73.52 | 81.99 |
++--------+-------+-------+
+2023-02-11 21:26:55,065 - mmseg - INFO - Summary:
+2023-02-11 21:26:55,065 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.28 | 75.63 | 83.54 |
++-------+-------+-------+
+2023-02-11 21:26:55,066 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8928, mIoU: 0.7563, mAcc: 0.8354, IoU.sky: 0.8921, IoU.tree: 0.7098, IoU.road: 0.8902, IoU.grass: 0.8059, IoU.water: 0.8432, IoU.bldg: 0.7889, IoU.mntn: 0.3851, IoU.fg obj: 0.7352, Acc.sky: 0.9258, Acc.tree: 0.8328, Acc.road: 0.9512, Acc.grass: 0.9079, Acc.water: 0.8849, Acc.bldg: 0.9230, Acc.mntn: 0.4381, Acc.fg obj: 0.8199
+2023-02-11 21:27:22,584 - mmseg - INFO - Iter [12600/40000]	lr: 7.143e-03, eta: 2:17:29, time: 0.302, data_time: 0.074, memory: 14046, decode.loss_ce: 0.0955, decode.acc_seg: 95.9642, aux.loss_ce: 0.0469, aux.acc_seg: 95.2390, loss: 0.1424
+2023-02-11 21:28:21,654 - mmseg - INFO - Iter [12800/40000]	lr: 7.097e-03, eta: 2:16:26, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0957, decode.acc_seg: 95.9848, aux.loss_ce: 0.0472, aux.acc_seg: 95.2555, loss: 0.1429
+2023-02-11 21:29:20,783 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:29:20,783 - mmseg - INFO - Iter [13000/40000]	lr: 7.051e-03, eta: 2:15:24, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0949, decode.acc_seg: 95.9547, aux.loss_ce: 0.0469, aux.acc_seg: 95.2047, loss: 0.1418
+2023-02-11 21:29:23,158 - mmseg - INFO - per class results:
+2023-02-11 21:29:23,159 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.37 | 93.27 |
+|  tree  | 71.08 | 83.26 |
+|  road  | 89.28 | 95.28 |
+| grass  | 80.94 | 90.79 |
+| water  | 84.81 | 88.71 |
+|  bldg  | 79.39 | 91.49 |
+|  mntn  | 38.53 |  44.9 |
+| fg obj | 74.45 | 83.39 |
++--------+-------+-------+
+2023-02-11 21:29:23,159 - mmseg - INFO - Summary:
+2023-02-11 21:29:23,159 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.52 | 75.98 | 83.89 |
++-------+-------+-------+
+2023-02-11 21:29:23,159 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:29:23,159 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8952, mIoU: 0.7598, mAcc: 0.8389, IoU.sky: 0.8937, IoU.tree: 0.7108, IoU.road: 0.8928, IoU.grass: 0.8094, IoU.water: 0.8481, IoU.bldg: 0.7939, IoU.mntn: 0.3853, IoU.fg obj: 0.7445, Acc.sky: 0.9327, Acc.tree: 0.8326, Acc.road: 0.9528, Acc.grass: 0.9079, Acc.water: 0.8871, Acc.bldg: 0.9149, Acc.mntn: 0.4490, Acc.fg obj: 0.8339
+2023-02-11 21:30:22,296 - mmseg - INFO - Iter [13200/40000]	lr: 7.004e-03, eta: 2:14:26, time: 0.308, data_time: 0.080, memory: 14046, decode.loss_ce: 0.0940, decode.acc_seg: 95.9734, aux.loss_ce: 0.0467, aux.acc_seg: 95.2400, loss: 0.1407
+2023-02-11 21:31:19,302 - mmseg - INFO - Iter [13400/40000]	lr: 6.958e-03, eta: 2:13:20, time: 0.285, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0931, decode.acc_seg: 96.0604, aux.loss_ce: 0.0459, aux.acc_seg: 95.3335, loss: 0.1390
+2023-02-11 21:31:51,127 - mmseg - INFO - per class results:
+2023-02-11 21:31:51,128 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.47 | 93.21 |
+|  tree  |  71.8 | 84.23 |
+|  road  |  89.1 | 95.39 |
+| grass  | 81.19 | 90.57 |
+| water  |  84.8 | 88.69 |
+|  bldg  | 79.69 | 91.23 |
+|  mntn  | 40.34 | 46.52 |
+| fg obj | 74.12 | 83.22 |
++--------+-------+-------+
+2023-02-11 21:31:51,128 - mmseg - INFO - Summary:
+2023-02-11 21:31:51,128 - mmseg - INFO - 
++------+-------+-------+
+| aAcc |  mIoU |  mAcc |
++------+-------+-------+
+| 89.6 | 76.31 | 84.13 |
++------+-------+-------+
+2023-02-11 21:31:51,128 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8960, mIoU: 0.7631, mAcc: 0.8413, IoU.sky: 0.8947, IoU.tree: 0.7180, IoU.road: 0.8910, IoU.grass: 0.8119, IoU.water: 0.8480, IoU.bldg: 0.7969, IoU.mntn: 0.4034, IoU.fg obj: 0.7412, Acc.sky: 0.9321, Acc.tree: 0.8423, Acc.road: 0.9539, Acc.grass: 0.9057, Acc.water: 0.8869, Acc.bldg: 0.9123, Acc.mntn: 0.4652, Acc.fg obj: 0.8322
+2023-02-11 21:32:20,704 - mmseg - INFO - Iter [13600/40000]	lr: 6.911e-03, eta: 2:12:26, time: 0.319, data_time: 0.091, memory: 14046, decode.loss_ce: 0.0924, decode.acc_seg: 96.0694, aux.loss_ce: 0.0457, aux.acc_seg: 95.3513, loss: 0.1380
+2023-02-11 21:33:19,777 - mmseg - INFO - Iter [13800/40000]	lr: 6.865e-03, eta: 2:11:24, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0907, decode.acc_seg: 96.0748, aux.loss_ce: 0.0448, aux.acc_seg: 95.3751, loss: 0.1355
+2023-02-11 21:34:16,701 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:34:16,701 - mmseg - INFO - Iter [14000/40000]	lr: 6.818e-03, eta: 2:10:18, time: 0.285, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0894, decode.acc_seg: 96.0965, aux.loss_ce: 0.0443, aux.acc_seg: 95.3780, loss: 0.1337
+2023-02-11 21:34:18,899 - mmseg - INFO - per class results:
+2023-02-11 21:34:18,900 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.24 | 92.63 |
+|  tree  | 71.22 | 83.25 |
+|  road  | 89.44 | 95.41 |
+| grass  | 79.81 | 90.55 |
+| water  | 86.41 | 91.31 |
+|  bldg  |  79.4 | 91.15 |
+|  mntn  | 39.49 |  46.1 |
+| fg obj | 74.59 | 83.75 |
++--------+-------+-------+
+2023-02-11 21:34:18,900 - mmseg - INFO - Summary:
+2023-02-11 21:34:18,900 - mmseg - INFO - 
++-------+------+-------+
+|  aAcc | mIoU |  mAcc |
++-------+------+-------+
+| 89.55 | 76.2 | 84.27 |
++-------+------+-------+
+2023-02-11 21:34:18,900 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:34:18,900 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8955, mIoU: 0.7620, mAcc: 0.8427, IoU.sky: 0.8924, IoU.tree: 0.7122, IoU.road: 0.8944, IoU.grass: 0.7981, IoU.water: 0.8641, IoU.bldg: 0.7940, IoU.mntn: 0.3949, IoU.fg obj: 0.7459, Acc.sky: 0.9263, Acc.tree: 0.8325, Acc.road: 0.9541, Acc.grass: 0.9055, Acc.water: 0.9131, Acc.bldg: 0.9115, Acc.mntn: 0.4610, Acc.fg obj: 0.8375
+2023-02-11 21:35:18,012 - mmseg - INFO - Iter [14200/40000]	lr: 6.772e-03, eta: 2:09:20, time: 0.307, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0896, decode.acc_seg: 96.1478, aux.loss_ce: 0.0441, aux.acc_seg: 95.4548, loss: 0.1337
+2023-02-11 21:36:17,209 - mmseg - INFO - Iter [14400/40000]	lr: 6.725e-03, eta: 2:08:18, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0912, decode.acc_seg: 96.1557, aux.loss_ce: 0.0449, aux.acc_seg: 95.4661, loss: 0.1361
+2023-02-11 21:36:48,973 - mmseg - INFO - per class results:
+2023-02-11 21:36:48,974 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   |  89.5 | 93.78 |
+|  tree  | 71.35 | 81.93 |
+|  road  | 89.78 |  95.7 |
+| grass  | 80.52 | 90.91 |
+| water  |  87.1 |  91.6 |
+|  bldg  | 79.64 | 91.47 |
+|  mntn  | 42.87 | 49.34 |
+| fg obj | 74.46 | 83.68 |
++--------+-------+-------+
+2023-02-11 21:36:48,974 - mmseg - INFO - Summary:
+2023-02-11 21:36:48,975 - mmseg - INFO - 
++-------+------+------+
+|  aAcc | mIoU | mAcc |
++-------+------+------+
+| 89.75 | 76.9 | 84.8 |
++-------+------+------+
+2023-02-11 21:36:48,975 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8975, mIoU: 0.7690, mAcc: 0.8480, IoU.sky: 0.8950, IoU.tree: 0.7135, IoU.road: 0.8978, IoU.grass: 0.8052, IoU.water: 0.8710, IoU.bldg: 0.7964, IoU.mntn: 0.4287, IoU.fg obj: 0.7446, Acc.sky: 0.9378, Acc.tree: 0.8193, Acc.road: 0.9570, Acc.grass: 0.9091, Acc.water: 0.9160, Acc.bldg: 0.9147, Acc.mntn: 0.4934, Acc.fg obj: 0.8368
+2023-02-11 21:37:18,510 - mmseg - INFO - Iter [14600/40000]	lr: 6.679e-03, eta: 2:07:24, time: 0.318, data_time: 0.090, memory: 14046, decode.loss_ce: 0.0881, decode.acc_seg: 96.1610, aux.loss_ce: 0.0431, aux.acc_seg: 95.4878, loss: 0.1312
+2023-02-11 21:38:15,477 - mmseg - INFO - Iter [14800/40000]	lr: 6.632e-03, eta: 2:06:18, time: 0.285, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0895, decode.acc_seg: 96.1806, aux.loss_ce: 0.0440, aux.acc_seg: 95.4970, loss: 0.1335
+2023-02-11 21:39:14,553 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:39:14,553 - mmseg - INFO - Iter [15000/40000]	lr: 6.585e-03, eta: 2:05:16, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0902, decode.acc_seg: 96.1494, aux.loss_ce: 0.0443, aux.acc_seg: 95.4869, loss: 0.1345
+2023-02-11 21:39:16,636 - mmseg - INFO - per class results:
+2023-02-11 21:39:16,637 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.19 | 92.44 |
+|  tree  | 71.63 | 84.92 |
+|  road  | 89.36 | 95.48 |
+| grass  | 81.15 | 90.25 |
+| water  | 85.66 | 89.45 |
+|  bldg  | 79.74 | 91.06 |
+|  mntn  | 39.96 | 46.27 |
+| fg obj | 74.28 | 83.53 |
++--------+-------+-------+
+2023-02-11 21:39:16,638 - mmseg - INFO - Summary:
+2023-02-11 21:39:16,638 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.62 | 76.37 | 84.18 |
++-------+-------+-------+
+2023-02-11 21:39:16,638 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:39:16,638 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8962, mIoU: 0.7637, mAcc: 0.8418, IoU.sky: 0.8919, IoU.tree: 0.7163, IoU.road: 0.8936, IoU.grass: 0.8115, IoU.water: 0.8566, IoU.bldg: 0.7974, IoU.mntn: 0.3996, IoU.fg obj: 0.7428, Acc.sky: 0.9244, Acc.tree: 0.8492, Acc.road: 0.9548, Acc.grass: 0.9025, Acc.water: 0.8945, Acc.bldg: 0.9106, Acc.mntn: 0.4627, Acc.fg obj: 0.8353
+2023-02-11 21:40:15,838 - mmseg - INFO - Iter [15200/40000]	lr: 6.539e-03, eta: 2:04:18, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0898, decode.acc_seg: 96.1758, aux.loss_ce: 0.0444, aux.acc_seg: 95.4733, loss: 0.1342
+2023-02-11 21:41:12,712 - mmseg - INFO - Iter [15400/40000]	lr: 6.492e-03, eta: 2:03:12, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0884, decode.acc_seg: 96.1943, aux.loss_ce: 0.0436, aux.acc_seg: 95.5161, loss: 0.1320
+2023-02-11 21:41:44,434 - mmseg - INFO - per class results:
+2023-02-11 21:41:44,435 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.29 | 93.06 |
+|  tree  | 71.94 | 85.03 |
+|  road  |  90.0 | 95.74 |
+| grass  | 81.01 | 89.61 |
+| water  | 86.62 | 91.43 |
+|  bldg  | 79.63 | 90.54 |
+|  mntn  | 41.53 | 47.39 |
+| fg obj | 74.26 | 83.69 |
++--------+-------+-------+
+2023-02-11 21:41:44,435 - mmseg - INFO - Summary:
+2023-02-11 21:41:44,436 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.76 | 76.78 | 84.56 |
++-------+-------+-------+
+2023-02-11 21:41:44,436 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8976, mIoU: 0.7678, mAcc: 0.8456, IoU.sky: 0.8929, IoU.tree: 0.7194, IoU.road: 0.9000, IoU.grass: 0.8101, IoU.water: 0.8662, IoU.bldg: 0.7963, IoU.mntn: 0.4153, IoU.fg obj: 0.7426, Acc.sky: 0.9306, Acc.tree: 0.8503, Acc.road: 0.9574, Acc.grass: 0.8961, Acc.water: 0.9143, Acc.bldg: 0.9054, Acc.mntn: 0.4739, Acc.fg obj: 0.8369
+2023-02-11 21:42:14,003 - mmseg - INFO - Iter [15600/40000]	lr: 6.445e-03, eta: 2:02:18, time: 0.318, data_time: 0.090, memory: 14046, decode.loss_ce: 0.0875, decode.acc_seg: 96.2508, aux.loss_ce: 0.0428, aux.acc_seg: 95.6047, loss: 0.1303
+2023-02-11 21:43:13,017 - mmseg - INFO - Iter [15800/40000]	lr: 6.398e-03, eta: 2:01:16, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0881, decode.acc_seg: 96.2136, aux.loss_ce: 0.0432, aux.acc_seg: 95.5624, loss: 0.1314
+2023-02-11 21:44:11,839 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:44:11,839 - mmseg - INFO - Iter [16000/40000]	lr: 6.352e-03, eta: 2:00:14, time: 0.294, data_time: 0.067, memory: 14046, decode.loss_ce: 0.0863, decode.acc_seg: 96.2563, aux.loss_ce: 0.0425, aux.acc_seg: 95.6172, loss: 0.1289
+2023-02-11 21:44:14,096 - mmseg - INFO - per class results:
+2023-02-11 21:44:14,096 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   |  89.2 | 92.78 |
+|  tree  | 71.08 | 82.79 |
+|  road  | 89.25 | 95.03 |
+| grass  | 80.03 | 90.96 |
+| water  | 86.16 | 90.08 |
+|  bldg  | 79.41 | 92.15 |
+|  mntn  | 42.66 | 49.97 |
+| fg obj | 74.03 | 82.79 |
++--------+-------+-------+
+2023-02-11 21:44:14,097 - mmseg - INFO - Summary:
+2023-02-11 21:44:14,097 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.49 | 76.48 | 84.57 |
++-------+-------+-------+
+2023-02-11 21:44:14,097 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:44:14,097 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8949, mIoU: 0.7648, mAcc: 0.8457, IoU.sky: 0.8920, IoU.tree: 0.7108, IoU.road: 0.8925, IoU.grass: 0.8003, IoU.water: 0.8616, IoU.bldg: 0.7941, IoU.mntn: 0.4266, IoU.fg obj: 0.7403, Acc.sky: 0.9278, Acc.tree: 0.8279, Acc.road: 0.9503, Acc.grass: 0.9096, Acc.water: 0.9008, Acc.bldg: 0.9215, Acc.mntn: 0.4997, Acc.fg obj: 0.8279
+2023-02-11 21:45:10,926 - mmseg - INFO - Iter [16200/40000]	lr: 6.305e-03, eta: 1:59:12, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0861, decode.acc_seg: 96.3378, aux.loss_ce: 0.0421, aux.acc_seg: 95.7046, loss: 0.1283
+2023-02-11 21:46:09,840 - mmseg - INFO - Iter [16400/40000]	lr: 6.258e-03, eta: 1:58:10, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0894, decode.acc_seg: 96.2208, aux.loss_ce: 0.0436, aux.acc_seg: 95.5653, loss: 0.1330
+2023-02-11 21:46:41,499 - mmseg - INFO - per class results:
+2023-02-11 21:46:41,501 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.52 | 92.92 |
+|  tree  | 71.27 | 84.54 |
+|  road  | 89.44 | 94.98 |
+| grass  | 81.33 | 90.56 |
+| water  | 85.55 |  89.4 |
+|  bldg  | 78.95 | 91.39 |
+|  mntn  | 40.96 | 43.71 |
+| fg obj | 74.23 | 83.47 |
++--------+-------+-------+
+2023-02-11 21:46:41,502 - mmseg - INFO - Summary:
+2023-02-11 21:46:41,502 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.55 | 76.41 | 83.87 |
++-------+-------+-------+
+2023-02-11 21:46:41,503 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8955, mIoU: 0.7641, mAcc: 0.8387, IoU.sky: 0.8952, IoU.tree: 0.7127, IoU.road: 0.8944, IoU.grass: 0.8133, IoU.water: 0.8555, IoU.bldg: 0.7895, IoU.mntn: 0.4096, IoU.fg obj: 0.7423, Acc.sky: 0.9292, Acc.tree: 0.8454, Acc.road: 0.9498, Acc.grass: 0.9056, Acc.water: 0.8940, Acc.bldg: 0.9139, Acc.mntn: 0.4371, Acc.fg obj: 0.8347
+2023-02-11 21:47:11,030 - mmseg - INFO - Iter [16600/40000]	lr: 6.211e-03, eta: 1:57:15, time: 0.318, data_time: 0.090, memory: 14046, decode.loss_ce: 0.0880, decode.acc_seg: 96.2848, aux.loss_ce: 0.0435, aux.acc_seg: 95.6274, loss: 0.1314
+2023-02-11 21:48:07,849 - mmseg - INFO - Iter [16800/40000]	lr: 6.164e-03, eta: 1:56:10, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0854, decode.acc_seg: 96.3173, aux.loss_ce: 0.0424, aux.acc_seg: 95.6468, loss: 0.1277
+2023-02-11 21:49:06,819 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:49:06,819 - mmseg - INFO - Iter [17000/40000]	lr: 6.117e-03, eta: 1:55:09, time: 0.295, data_time: 0.067, memory: 14046, decode.loss_ce: 0.0867, decode.acc_seg: 96.3253, aux.loss_ce: 0.0421, aux.acc_seg: 95.6997, loss: 0.1287
+2023-02-11 21:49:09,093 - mmseg - INFO - per class results:
+2023-02-11 21:49:09,094 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.52 | 93.22 |
+|  tree  | 71.28 | 83.28 |
+|  road  | 89.94 |  95.6 |
+| grass  | 82.47 | 90.57 |
+| water  | 86.52 | 90.71 |
+|  bldg  | 78.76 | 92.09 |
+|  mntn  |  41.0 | 44.18 |
+| fg obj | 74.45 | 83.06 |
++--------+-------+-------+
+2023-02-11 21:49:09,094 - mmseg - INFO - Summary:
+2023-02-11 21:49:09,094 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.71 | 76.74 | 84.09 |
++-------+-------+-------+
+2023-02-11 21:49:09,095 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:49:09,095 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8971, mIoU: 0.7674, mAcc: 0.8409, IoU.sky: 0.8952, IoU.tree: 0.7128, IoU.road: 0.8994, IoU.grass: 0.8247, IoU.water: 0.8652, IoU.bldg: 0.7876, IoU.mntn: 0.4100, IoU.fg obj: 0.7445, Acc.sky: 0.9322, Acc.tree: 0.8328, Acc.road: 0.9560, Acc.grass: 0.9057, Acc.water: 0.9071, Acc.bldg: 0.9209, Acc.mntn: 0.4418, Acc.fg obj: 0.8306
+2023-02-11 21:50:08,076 - mmseg - INFO - Iter [17200/40000]	lr: 6.070e-03, eta: 1:54:10, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0836, decode.acc_seg: 96.3721, aux.loss_ce: 0.0410, aux.acc_seg: 95.7352, loss: 0.1246
+2023-02-11 21:51:07,080 - mmseg - INFO - Iter [17400/40000]	lr: 6.022e-03, eta: 1:53:09, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.1366, decode.acc_seg: 94.3998, aux.loss_ce: 0.0718, aux.acc_seg: 92.8891, loss: 0.2083
+2023-02-11 21:51:36,654 - mmseg - INFO - per class results:
+2023-02-11 21:51:36,655 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 88.96 | 93.24 |
+|  tree  | 69.52 |  82.1 |
+|  road  | 89.05 | 95.61 |
+| grass  | 79.14 | 92.09 |
+| water  | 83.93 | 88.71 |
+|  bldg  | 78.73 | 91.32 |
+|  mntn  | 29.75 | 33.31 |
+| fg obj | 72.97 | 80.91 |
++--------+-------+-------+
+2023-02-11 21:51:36,655 - mmseg - INFO - Summary:
+2023-02-11 21:51:36,656 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 88.94 | 74.01 | 82.16 |
++-------+-------+-------+
+2023-02-11 21:51:36,656 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8894, mIoU: 0.7401, mAcc: 0.8216, IoU.sky: 0.8896, IoU.tree: 0.6952, IoU.road: 0.8905, IoU.grass: 0.7914, IoU.water: 0.8393, IoU.bldg: 0.7873, IoU.mntn: 0.2975, IoU.fg obj: 0.7297, Acc.sky: 0.9324, Acc.tree: 0.8210, Acc.road: 0.9561, Acc.grass: 0.9209, Acc.water: 0.8871, Acc.bldg: 0.9132, Acc.mntn: 0.3331, Acc.fg obj: 0.8091
+2023-02-11 21:52:06,214 - mmseg - INFO - Iter [17600/40000]	lr: 5.975e-03, eta: 1:52:13, time: 0.318, data_time: 0.090, memory: 14046, decode.loss_ce: 0.1039, decode.acc_seg: 95.5894, aux.loss_ce: 0.0540, aux.acc_seg: 94.5905, loss: 0.1579
+2023-02-11 21:53:05,095 - mmseg - INFO - Iter [17800/40000]	lr: 5.928e-03, eta: 1:51:11, time: 0.294, data_time: 0.067, memory: 14046, decode.loss_ce: 0.0973, decode.acc_seg: 95.9174, aux.loss_ce: 0.0492, aux.acc_seg: 95.0819, loss: 0.1465
+2023-02-11 21:54:04,065 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:54:04,065 - mmseg - INFO - Iter [18000/40000]	lr: 5.881e-03, eta: 1:50:10, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0913, decode.acc_seg: 96.1552, aux.loss_ce: 0.0457, aux.acc_seg: 95.3926, loss: 0.1371
+2023-02-11 21:54:06,324 - mmseg - INFO - per class results:
+2023-02-11 21:54:06,325 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.49 | 93.35 |
+|  tree  | 71.27 | 84.19 |
+|  road  | 89.25 | 95.51 |
+| grass  | 81.89 | 90.79 |
+| water  | 84.13 |  88.9 |
+|  bldg  | 79.64 | 91.12 |
+|  mntn  | 37.48 | 43.33 |
+| fg obj | 74.15 | 82.96 |
++--------+-------+-------+
+2023-02-11 21:54:06,325 - mmseg - INFO - Summary:
+2023-02-11 21:54:06,326 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.56 | 75.91 | 83.77 |
++-------+-------+-------+
+2023-02-11 21:54:06,326 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:54:06,326 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8956, mIoU: 0.7591, mAcc: 0.8377, IoU.sky: 0.8949, IoU.tree: 0.7127, IoU.road: 0.8925, IoU.grass: 0.8189, IoU.water: 0.8413, IoU.bldg: 0.7964, IoU.mntn: 0.3748, IoU.fg obj: 0.7415, Acc.sky: 0.9335, Acc.tree: 0.8419, Acc.road: 0.9551, Acc.grass: 0.9079, Acc.water: 0.8890, Acc.bldg: 0.9112, Acc.mntn: 0.4333, Acc.fg obj: 0.8296
+2023-02-11 21:55:03,259 - mmseg - INFO - Iter [18200/40000]	lr: 5.833e-03, eta: 1:49:09, time: 0.296, data_time: 0.069, memory: 14046, decode.loss_ce: 0.0882, decode.acc_seg: 96.2674, aux.loss_ce: 0.0440, aux.acc_seg: 95.5572, loss: 0.1322
+2023-02-11 21:56:02,371 - mmseg - INFO - Iter [18400/40000]	lr: 5.786e-03, eta: 1:48:07, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0903, decode.acc_seg: 96.2519, aux.loss_ce: 0.0450, aux.acc_seg: 95.5367, loss: 0.1353
+2023-02-11 21:56:34,060 - mmseg - INFO - per class results:
+2023-02-11 21:56:34,061 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.37 | 93.03 |
+|  tree  | 71.49 | 83.87 |
+|  road  | 88.78 | 94.57 |
+| grass  | 80.18 | 89.83 |
+| water  | 85.14 | 89.02 |
+|  bldg  | 79.99 | 90.97 |
+|  mntn  | 39.16 | 44.21 |
+| fg obj | 74.15 | 85.03 |
++--------+-------+-------+
+2023-02-11 21:56:34,061 - mmseg - INFO - Summary:
+2023-02-11 21:56:34,062 - mmseg - INFO - 
++------+-------+-------+
+| aAcc |  mIoU |  mAcc |
++------+-------+-------+
+| 89.5 | 76.03 | 83.82 |
++------+-------+-------+
+2023-02-11 21:56:34,062 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8950, mIoU: 0.7603, mAcc: 0.8382, IoU.sky: 0.8937, IoU.tree: 0.7149, IoU.road: 0.8878, IoU.grass: 0.8018, IoU.water: 0.8514, IoU.bldg: 0.7999, IoU.mntn: 0.3916, IoU.fg obj: 0.7415, Acc.sky: 0.9303, Acc.tree: 0.8387, Acc.road: 0.9457, Acc.grass: 0.8983, Acc.water: 0.8902, Acc.bldg: 0.9097, Acc.mntn: 0.4421, Acc.fg obj: 0.8503
+2023-02-11 21:57:03,554 - mmseg - INFO - Iter [18600/40000]	lr: 5.739e-03, eta: 1:47:11, time: 0.317, data_time: 0.090, memory: 14046, decode.loss_ce: 0.0894, decode.acc_seg: 96.1168, aux.loss_ce: 0.0467, aux.acc_seg: 95.1814, loss: 0.1361
+2023-02-11 21:58:02,606 - mmseg - INFO - Iter [18800/40000]	lr: 5.691e-03, eta: 1:46:10, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0906, decode.acc_seg: 96.0974, aux.loss_ce: 0.0452, aux.acc_seg: 95.3284, loss: 0.1358
+2023-02-11 21:58:59,631 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:58:59,632 - mmseg - INFO - Iter [19000/40000]	lr: 5.644e-03, eta: 1:45:06, time: 0.285, data_time: 0.058, memory: 14046, decode.loss_ce: 0.0862, decode.acc_seg: 96.3288, aux.loss_ce: 0.0426, aux.acc_seg: 95.6555, loss: 0.1288
+2023-02-11 21:59:01,972 - mmseg - INFO - per class results:
+2023-02-11 21:59:01,973 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.41 |  93.0 |
+|  tree  | 70.59 | 81.63 |
+|  road  | 89.14 | 95.49 |
+| grass  | 81.15 | 90.25 |
+| water  | 84.41 | 89.56 |
+|  bldg  | 78.67 | 92.35 |
+|  mntn  | 39.16 | 45.42 |
+| fg obj | 73.98 | 82.53 |
++--------+-------+-------+
+2023-02-11 21:59:01,973 - mmseg - INFO - Summary:
+2023-02-11 21:59:01,973 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.35 | 75.81 | 83.78 |
++-------+-------+-------+
+2023-02-11 21:59:01,973 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 21:59:01,973 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8935, mIoU: 0.7581, mAcc: 0.8378, IoU.sky: 0.8941, IoU.tree: 0.7059, IoU.road: 0.8914, IoU.grass: 0.8115, IoU.water: 0.8441, IoU.bldg: 0.7867, IoU.mntn: 0.3916, IoU.fg obj: 0.7398, Acc.sky: 0.9300, Acc.tree: 0.8163, Acc.road: 0.9549, Acc.grass: 0.9025, Acc.water: 0.8956, Acc.bldg: 0.9235, Acc.mntn: 0.4542, Acc.fg obj: 0.8253
+2023-02-11 22:00:01,032 - mmseg - INFO - Iter [19200/40000]	lr: 5.596e-03, eta: 1:44:08, time: 0.307, data_time: 0.080, memory: 14046, decode.loss_ce: 0.0878, decode.acc_seg: 96.2965, aux.loss_ce: 0.0428, aux.acc_seg: 95.6936, loss: 0.1306
+2023-02-11 22:01:00,064 - mmseg - INFO - Iter [19400/40000]	lr: 5.549e-03, eta: 1:43:07, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0852, decode.acc_seg: 96.3531, aux.loss_ce: 0.0419, aux.acc_seg: 95.7170, loss: 0.1271
+2023-02-11 22:01:31,849 - mmseg - INFO - per class results:
+2023-02-11 22:01:31,850 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.33 | 93.23 |
+|  tree  | 71.32 | 83.69 |
+|  road  | 89.06 | 95.81 |
+| grass  | 81.68 | 90.98 |
+| water  | 83.94 | 88.48 |
+|  bldg  | 79.65 | 91.15 |
+|  mntn  | 40.11 | 46.64 |
+| fg obj | 74.02 | 82.57 |
++--------+-------+-------+
+2023-02-11 22:01:31,850 - mmseg - INFO - Summary:
+2023-02-11 22:01:31,850 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.53 | 76.14 | 84.07 |
++-------+-------+-------+
+2023-02-11 22:01:31,850 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8953, mIoU: 0.7614, mAcc: 0.8407, IoU.sky: 0.8933, IoU.tree: 0.7132, IoU.road: 0.8906, IoU.grass: 0.8168, IoU.water: 0.8394, IoU.bldg: 0.7965, IoU.mntn: 0.4011, IoU.fg obj: 0.7402, Acc.sky: 0.9323, Acc.tree: 0.8369, Acc.road: 0.9581, Acc.grass: 0.9098, Acc.water: 0.8848, Acc.bldg: 0.9115, Acc.mntn: 0.4664, Acc.fg obj: 0.8257
+2023-02-11 22:01:59,286 - mmseg - INFO - Iter [19600/40000]	lr: 5.501e-03, eta: 1:42:06, time: 0.297, data_time: 0.069, memory: 14046, decode.loss_ce: 0.0837, decode.acc_seg: 96.4430, aux.loss_ce: 0.0408, aux.acc_seg: 95.8381, loss: 0.1245
+2023-02-11 22:02:58,393 - mmseg - INFO - Iter [19800/40000]	lr: 5.453e-03, eta: 1:41:05, time: 0.296, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0842, decode.acc_seg: 96.4287, aux.loss_ce: 0.0412, aux.acc_seg: 95.8374, loss: 0.1253
+2023-02-11 22:03:57,541 - mmseg - INFO - Saving checkpoint at 20000 iterations
+2023-02-11 22:03:58,534 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:03:58,534 - mmseg - INFO - Iter [20000/40000]	lr: 5.406e-03, eta: 1:40:05, time: 0.301, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0835, decode.acc_seg: 96.4426, aux.loss_ce: 0.0405, aux.acc_seg: 95.8438, loss: 0.1240
+2023-02-11 22:04:00,779 - mmseg - INFO - per class results:
+2023-02-11 22:04:00,780 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.18 | 93.06 |
+|  tree  | 70.79 | 82.42 |
+|  road  | 89.52 | 95.33 |
+| grass  | 82.24 | 90.73 |
+| water  | 85.95 | 90.01 |
+|  bldg  | 79.19 | 91.99 |
+|  mntn  | 40.03 | 44.94 |
+| fg obj | 74.09 | 83.51 |
++--------+-------+-------+
+2023-02-11 22:04:00,780 - mmseg - INFO - Summary:
+2023-02-11 22:04:00,781 - mmseg - INFO - 
++-------+-------+------+
+|  aAcc |  mIoU | mAcc |
++-------+-------+------+
+| 89.55 | 76.37 | 84.0 |
++-------+-------+------+
+2023-02-11 22:04:00,781 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:04:00,781 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8955, mIoU: 0.7637, mAcc: 0.8400, IoU.sky: 0.8918, IoU.tree: 0.7079, IoU.road: 0.8952, IoU.grass: 0.8224, IoU.water: 0.8595, IoU.bldg: 0.7919, IoU.mntn: 0.4003, IoU.fg obj: 0.7409, Acc.sky: 0.9306, Acc.tree: 0.8242, Acc.road: 0.9533, Acc.grass: 0.9073, Acc.water: 0.9001, Acc.bldg: 0.9199, Acc.mntn: 0.4494, Acc.fg obj: 0.8351
+2023-02-11 22:04:59,838 - mmseg - INFO - Iter [20200/40000]	lr: 5.358e-03, eta: 1:39:06, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0842, decode.acc_seg: 96.4784, aux.loss_ce: 0.0414, aux.acc_seg: 95.8687, loss: 0.1256
+2023-02-11 22:05:56,806 - mmseg - INFO - Iter [20400/40000]	lr: 5.310e-03, eta: 1:38:03, time: 0.285, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0823, decode.acc_seg: 96.5121, aux.loss_ce: 0.0403, aux.acc_seg: 95.9069, loss: 0.1226
+2023-02-11 22:06:28,536 - mmseg - INFO - per class results:
+2023-02-11 22:06:28,537 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.43 | 93.21 |
+|  tree  | 70.23 | 81.46 |
+|  road  | 89.11 | 95.55 |
+| grass  | 80.97 | 90.55 |
+| water  | 86.53 | 91.29 |
+|  bldg  | 78.21 | 92.11 |
+|  mntn  | 37.66 | 42.71 |
+| fg obj | 73.49 | 81.74 |
++--------+-------+-------+
+2023-02-11 22:06:28,537 - mmseg - INFO - Summary:
+2023-02-11 22:06:28,537 - mmseg - INFO - 
++-------+------+-------+
+|  aAcc | mIoU |  mAcc |
++-------+------+-------+
+| 89.24 | 75.7 | 83.57 |
++-------+------+-------+
+2023-02-11 22:06:28,537 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8924, mIoU: 0.7570, mAcc: 0.8357, IoU.sky: 0.8943, IoU.tree: 0.7023, IoU.road: 0.8911, IoU.grass: 0.8097, IoU.water: 0.8653, IoU.bldg: 0.7821, IoU.mntn: 0.3766, IoU.fg obj: 0.7349, Acc.sky: 0.9321, Acc.tree: 0.8146, Acc.road: 0.9555, Acc.grass: 0.9055, Acc.water: 0.9129, Acc.bldg: 0.9211, Acc.mntn: 0.4271, Acc.fg obj: 0.8174
+2023-02-11 22:06:57,987 - mmseg - INFO - Iter [20600/40000]	lr: 5.262e-03, eta: 1:37:06, time: 0.317, data_time: 0.090, memory: 14046, decode.loss_ce: 0.0818, decode.acc_seg: 96.4642, aux.loss_ce: 0.0400, aux.acc_seg: 95.8698, loss: 0.1218
+2023-02-11 22:07:56,899 - mmseg - INFO - Iter [20800/40000]	lr: 5.214e-03, eta: 1:36:05, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0818, decode.acc_seg: 96.4963, aux.loss_ce: 0.0399, aux.acc_seg: 95.9335, loss: 0.1217
+2023-02-11 22:08:53,766 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:08:53,767 - mmseg - INFO - Iter [21000/40000]	lr: 5.166e-03, eta: 1:35:02, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0872, decode.acc_seg: 96.3519, aux.loss_ce: 0.0434, aux.acc_seg: 95.6268, loss: 0.1305
+2023-02-11 22:08:55,972 - mmseg - INFO - per class results:
+2023-02-11 22:08:55,973 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.35 | 93.29 |
+|  tree  | 71.85 | 85.85 |
+|  road  | 89.12 | 95.56 |
+| grass  | 81.33 |  89.2 |
+| water  | 84.48 | 88.04 |
+|  bldg  | 80.15 | 90.24 |
+|  mntn  | 40.77 | 49.23 |
+| fg obj | 74.76 | 83.84 |
++--------+-------+-------+
+2023-02-11 22:08:55,973 - mmseg - INFO - Summary:
+2023-02-11 22:08:55,973 - mmseg - INFO - 
++-------+-------+------+
+|  aAcc |  mIoU | mAcc |
++-------+-------+------+
+| 89.69 | 76.48 | 84.4 |
++-------+-------+------+
+2023-02-11 22:08:55,973 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:08:55,974 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8969, mIoU: 0.7648, mAcc: 0.8440, IoU.sky: 0.8935, IoU.tree: 0.7185, IoU.road: 0.8912, IoU.grass: 0.8133, IoU.water: 0.8448, IoU.bldg: 0.8015, IoU.mntn: 0.4077, IoU.fg obj: 0.7476, Acc.sky: 0.9329, Acc.tree: 0.8585, Acc.road: 0.9556, Acc.grass: 0.8920, Acc.water: 0.8804, Acc.bldg: 0.9024, Acc.mntn: 0.4923, Acc.fg obj: 0.8384
+2023-02-11 22:09:54,964 - mmseg - INFO - Iter [21200/40000]	lr: 5.118e-03, eta: 1:34:03, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0904, decode.acc_seg: 96.1839, aux.loss_ce: 0.0455, aux.acc_seg: 95.4225, loss: 0.1358
+2023-02-11 22:10:53,900 - mmseg - INFO - Iter [21400/40000]	lr: 5.070e-03, eta: 1:33:02, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0888, decode.acc_seg: 96.2366, aux.loss_ce: 0.0449, aux.acc_seg: 95.4672, loss: 0.1337
+2023-02-11 22:11:25,616 - mmseg - INFO - per class results:
+2023-02-11 22:11:25,617 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.24 | 93.58 |
+|  tree  | 71.12 | 83.36 |
+|  road  | 89.26 | 96.01 |
+| grass  | 81.51 | 89.49 |
+| water  |  84.2 | 88.87 |
+|  bldg  |  79.9 | 91.59 |
+|  mntn  | 43.02 | 50.02 |
+| fg obj | 74.05 | 82.36 |
++--------+-------+-------+
+2023-02-11 22:11:25,617 - mmseg - INFO - Summary:
+2023-02-11 22:11:25,617 - mmseg - INFO - 
++------+-------+-------+
+| aAcc |  mIoU |  mAcc |
++------+-------+-------+
+| 89.6 | 76.54 | 84.41 |
++------+-------+-------+
+2023-02-11 22:11:25,617 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8960, mIoU: 0.7654, mAcc: 0.8441, IoU.sky: 0.8924, IoU.tree: 0.7112, IoU.road: 0.8926, IoU.grass: 0.8151, IoU.water: 0.8420, IoU.bldg: 0.7990, IoU.mntn: 0.4302, IoU.fg obj: 0.7405, Acc.sky: 0.9358, Acc.tree: 0.8336, Acc.road: 0.9601, Acc.grass: 0.8949, Acc.water: 0.8887, Acc.bldg: 0.9159, Acc.mntn: 0.5002, Acc.fg obj: 0.8236
+2023-02-11 22:11:55,117 - mmseg - INFO - Iter [21600/40000]	lr: 5.022e-03, eta: 1:32:05, time: 0.317, data_time: 0.090, memory: 14046, decode.loss_ce: 0.0819, decode.acc_seg: 96.5357, aux.loss_ce: 0.0402, aux.acc_seg: 95.9437, loss: 0.1221
+2023-02-11 22:12:51,925 - mmseg - INFO - Iter [21800/40000]	lr: 4.974e-03, eta: 1:31:02, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0817, decode.acc_seg: 96.4878, aux.loss_ce: 0.0407, aux.acc_seg: 95.8612, loss: 0.1224
+2023-02-11 22:13:50,903 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:13:50,904 - mmseg - INFO - Iter [22000/40000]	lr: 4.926e-03, eta: 1:30:01, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0814, decode.acc_seg: 96.5210, aux.loss_ce: 0.0400, aux.acc_seg: 95.9297, loss: 0.1214
+2023-02-11 22:13:53,098 - mmseg - INFO - per class results:
+2023-02-11 22:13:53,099 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.61 | 93.17 |
+|  tree  |  71.7 |  84.9 |
+|  road  | 89.28 | 95.63 |
+| grass  | 80.48 | 89.48 |
+| water  | 84.33 | 89.08 |
+|  bldg  | 79.88 | 90.95 |
+|  mntn  |  41.5 | 47.82 |
+| fg obj | 74.47 | 83.27 |
++--------+-------+-------+
+2023-02-11 22:13:53,099 - mmseg - INFO - Summary:
+2023-02-11 22:13:53,099 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.65 | 76.41 | 84.29 |
++-------+-------+-------+
+2023-02-11 22:13:53,099 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:13:53,100 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8965, mIoU: 0.7641, mAcc: 0.8429, IoU.sky: 0.8961, IoU.tree: 0.7170, IoU.road: 0.8928, IoU.grass: 0.8048, IoU.water: 0.8433, IoU.bldg: 0.7988, IoU.mntn: 0.4150, IoU.fg obj: 0.7447, Acc.sky: 0.9317, Acc.tree: 0.8490, Acc.road: 0.9563, Acc.grass: 0.8948, Acc.water: 0.8908, Acc.bldg: 0.9095, Acc.mntn: 0.4782, Acc.fg obj: 0.8327
+2023-02-11 22:14:52,059 - mmseg - INFO - Iter [22200/40000]	lr: 4.877e-03, eta: 1:29:02, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0807, decode.acc_seg: 96.5774, aux.loss_ce: 0.0398, aux.acc_seg: 96.0085, loss: 0.1205
+2023-02-11 22:15:48,886 - mmseg - INFO - Iter [22400/40000]	lr: 4.829e-03, eta: 1:28:00, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0831, decode.acc_seg: 96.5301, aux.loss_ce: 0.0403, aux.acc_seg: 95.9769, loss: 0.1234
+2023-02-11 22:16:20,534 - mmseg - INFO - per class results:
+2023-02-11 22:16:20,535 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.37 |  93.6 |
+|  tree  | 71.27 | 83.19 |
+|  road  | 89.25 | 95.62 |
+| grass  | 80.47 | 91.34 |
+| water  | 86.66 | 91.14 |
+|  bldg  | 79.31 | 91.25 |
+|  mntn  | 40.66 | 46.39 |
+| fg obj | 73.86 | 82.01 |
++--------+-------+-------+
+2023-02-11 22:16:20,535 - mmseg - INFO - Summary:
+2023-02-11 22:16:20,536 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.53 | 76.36 | 84.32 |
++-------+-------+-------+
+2023-02-11 22:16:20,536 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8953, mIoU: 0.7636, mAcc: 0.8432, IoU.sky: 0.8937, IoU.tree: 0.7127, IoU.road: 0.8925, IoU.grass: 0.8047, IoU.water: 0.8666, IoU.bldg: 0.7931, IoU.mntn: 0.4066, IoU.fg obj: 0.7386, Acc.sky: 0.9360, Acc.tree: 0.8319, Acc.road: 0.9562, Acc.grass: 0.9134, Acc.water: 0.9114, Acc.bldg: 0.9125, Acc.mntn: 0.4639, Acc.fg obj: 0.8201
+2023-02-11 22:16:49,941 - mmseg - INFO - Iter [22600/40000]	lr: 4.781e-03, eta: 1:27:02, time: 0.316, data_time: 0.089, memory: 14046, decode.loss_ce: 0.0800, decode.acc_seg: 96.5747, aux.loss_ce: 0.0396, aux.acc_seg: 95.9855, loss: 0.1195
+2023-02-11 22:17:48,776 - mmseg - INFO - Iter [22800/40000]	lr: 4.732e-03, eta: 1:26:01, time: 0.294, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0801, decode.acc_seg: 96.5767, aux.loss_ce: 0.0394, aux.acc_seg: 95.9884, loss: 0.1195
+2023-02-11 22:18:47,657 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:18:47,657 - mmseg - INFO - Iter [23000/40000]	lr: 4.684e-03, eta: 1:25:00, time: 0.294, data_time: 0.067, memory: 14046, decode.loss_ce: 0.0802, decode.acc_seg: 96.5944, aux.loss_ce: 0.0391, aux.acc_seg: 96.0378, loss: 0.1193
+2023-02-11 22:18:49,930 - mmseg - INFO - per class results:
+2023-02-11 22:18:49,931 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.45 | 92.88 |
+|  tree  | 71.52 | 83.82 |
+|  road  | 89.17 | 95.79 |
+| grass  |  81.8 |  90.0 |
+| water  | 84.12 | 88.64 |
+|  bldg  | 79.46 | 91.23 |
+|  mntn  | 39.79 | 45.55 |
+| fg obj | 74.17 | 83.39 |
++--------+-------+-------+
+2023-02-11 22:18:49,931 - mmseg - INFO - Summary:
+2023-02-11 22:18:49,932 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.57 | 76.18 | 83.91 |
++-------+-------+-------+
+2023-02-11 22:18:49,932 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:18:49,932 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8957, mIoU: 0.7618, mAcc: 0.8391, IoU.sky: 0.8945, IoU.tree: 0.7152, IoU.road: 0.8917, IoU.grass: 0.8180, IoU.water: 0.8412, IoU.bldg: 0.7946, IoU.mntn: 0.3979, IoU.fg obj: 0.7417, Acc.sky: 0.9288, Acc.tree: 0.8382, Acc.road: 0.9579, Acc.grass: 0.9000, Acc.water: 0.8864, Acc.bldg: 0.9123, Acc.mntn: 0.4555, Acc.fg obj: 0.8339
+2023-02-11 22:19:46,789 - mmseg - INFO - Iter [23200/40000]	lr: 4.635e-03, eta: 1:24:00, time: 0.296, data_time: 0.069, memory: 14046, decode.loss_ce: 0.0789, decode.acc_seg: 96.5843, aux.loss_ce: 0.0385, aux.acc_seg: 96.0391, loss: 0.1174
+2023-02-11 22:20:45,687 - mmseg - INFO - Iter [23400/40000]	lr: 4.586e-03, eta: 1:22:59, time: 0.294, data_time: 0.067, memory: 14046, decode.loss_ce: 0.0788, decode.acc_seg: 96.6667, aux.loss_ce: 0.0385, aux.acc_seg: 96.1367, loss: 0.1173
+2023-02-11 22:21:17,379 - mmseg - INFO - per class results:
+2023-02-11 22:21:17,380 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.48 | 93.32 |
+|  tree  | 71.94 | 84.62 |
+|  road  | 89.24 | 95.92 |
+| grass  | 81.78 | 89.98 |
+| water  | 84.21 | 89.11 |
+|  bldg  | 79.85 | 90.71 |
+|  mntn  | 40.19 | 47.57 |
+| fg obj | 74.18 | 83.08 |
++--------+-------+-------+
+2023-02-11 22:21:17,380 - mmseg - INFO - Summary:
+2023-02-11 22:21:17,380 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.66 | 76.36 | 84.29 |
++-------+-------+-------+
+2023-02-11 22:21:17,380 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8966, mIoU: 0.7636, mAcc: 0.8429, IoU.sky: 0.8948, IoU.tree: 0.7194, IoU.road: 0.8924, IoU.grass: 0.8178, IoU.water: 0.8421, IoU.bldg: 0.7985, IoU.mntn: 0.4019, IoU.fg obj: 0.7418, Acc.sky: 0.9332, Acc.tree: 0.8462, Acc.road: 0.9592, Acc.grass: 0.8998, Acc.water: 0.8911, Acc.bldg: 0.9071, Acc.mntn: 0.4757, Acc.fg obj: 0.8308
+2023-02-11 22:21:46,868 - mmseg - INFO - Iter [23600/40000]	lr: 4.538e-03, eta: 1:22:01, time: 0.317, data_time: 0.090, memory: 14046, decode.loss_ce: 0.0800, decode.acc_seg: 96.5338, aux.loss_ce: 0.0392, aux.acc_seg: 95.9710, loss: 0.1192
+2023-02-11 22:22:43,698 - mmseg - INFO - Iter [23800/40000]	lr: 4.489e-03, eta: 1:20:59, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0770, decode.acc_seg: 96.7353, aux.loss_ce: 0.0375, aux.acc_seg: 96.1830, loss: 0.1145
+2023-02-11 22:23:42,606 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:23:42,607 - mmseg - INFO - Iter [24000/40000]	lr: 4.440e-03, eta: 1:19:58, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0795, decode.acc_seg: 96.6632, aux.loss_ce: 0.0386, aux.acc_seg: 96.1229, loss: 0.1181
+2023-02-11 22:23:44,840 - mmseg - INFO - per class results:
+2023-02-11 22:23:44,840 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.49 | 93.53 |
+|  tree  | 70.93 | 82.89 |
+|  road  | 89.14 | 96.01 |
+| grass  |  82.1 | 89.58 |
+| water  | 83.91 | 88.18 |
+|  bldg  | 78.78 | 92.18 |
+|  mntn  | 39.82 | 46.21 |
+| fg obj | 73.88 | 81.48 |
++--------+-------+-------+
+2023-02-11 22:23:44,841 - mmseg - INFO - Summary:
+2023-02-11 22:23:44,841 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.43 | 76.01 | 83.76 |
++-------+-------+-------+
+2023-02-11 22:23:44,841 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:23:44,841 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8943, mIoU: 0.7601, mAcc: 0.8376, IoU.sky: 0.8949, IoU.tree: 0.7093, IoU.road: 0.8914, IoU.grass: 0.8210, IoU.water: 0.8391, IoU.bldg: 0.7878, IoU.mntn: 0.3982, IoU.fg obj: 0.7388, Acc.sky: 0.9353, Acc.tree: 0.8289, Acc.road: 0.9601, Acc.grass: 0.8958, Acc.water: 0.8818, Acc.bldg: 0.9218, Acc.mntn: 0.4621, Acc.fg obj: 0.8148
+2023-02-11 22:24:43,738 - mmseg - INFO - Iter [24200/40000]	lr: 4.391e-03, eta: 1:18:59, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0789, decode.acc_seg: 96.6643, aux.loss_ce: 0.0382, aux.acc_seg: 96.1313, loss: 0.1171
+2023-02-11 22:25:42,677 - mmseg - INFO - Iter [24400/40000]	lr: 4.342e-03, eta: 1:17:58, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0779, decode.acc_seg: 96.7110, aux.loss_ce: 0.0379, aux.acc_seg: 96.1798, loss: 0.1158
+2023-02-11 22:26:12,274 - mmseg - INFO - per class results:
+2023-02-11 22:26:12,274 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.43 | 92.97 |
+|  tree  | 70.97 | 85.09 |
+|  road  |  88.7 | 94.32 |
+| grass  | 80.13 | 91.03 |
+| water  | 85.15 | 89.21 |
+|  bldg  | 79.04 | 90.68 |
+|  mntn  |  43.0 | 45.26 |
+| fg obj | 73.68 | 83.12 |
++--------+-------+-------+
+2023-02-11 22:26:12,275 - mmseg - INFO - Summary:
+2023-02-11 22:26:12,275 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.32 | 76.26 | 83.96 |
++-------+-------+-------+
+2023-02-11 22:26:12,275 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8932, mIoU: 0.7626, mAcc: 0.8396, IoU.sky: 0.8943, IoU.tree: 0.7097, IoU.road: 0.8870, IoU.grass: 0.8013, IoU.water: 0.8515, IoU.bldg: 0.7904, IoU.mntn: 0.4300, IoU.fg obj: 0.7368, Acc.sky: 0.9297, Acc.tree: 0.8509, Acc.road: 0.9432, Acc.grass: 0.9103, Acc.water: 0.8921, Acc.bldg: 0.9068, Acc.mntn: 0.4526, Acc.fg obj: 0.8312
+2023-02-11 22:26:41,738 - mmseg - INFO - Iter [24600/40000]	lr: 4.293e-03, eta: 1:17:00, time: 0.317, data_time: 0.090, memory: 14046, decode.loss_ce: 0.0871, decode.acc_seg: 96.3602, aux.loss_ce: 0.0437, aux.acc_seg: 95.6259, loss: 0.1308
+2023-02-11 22:27:40,635 - mmseg - INFO - Iter [24800/40000]	lr: 4.244e-03, eta: 1:16:00, time: 0.294, data_time: 0.067, memory: 14046, decode.loss_ce: 0.0951, decode.acc_seg: 96.0188, aux.loss_ce: 0.0505, aux.acc_seg: 95.0125, loss: 0.1456
+2023-02-11 22:28:39,572 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:28:39,572 - mmseg - INFO - Iter [25000/40000]	lr: 4.195e-03, eta: 1:14:59, time: 0.295, data_time: 0.067, memory: 14046, decode.loss_ce: 0.0811, decode.acc_seg: 96.5408, aux.loss_ce: 0.0403, aux.acc_seg: 95.8995, loss: 0.1215
+2023-02-11 22:28:41,863 - mmseg - INFO - per class results:
+2023-02-11 22:28:41,864 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.54 | 93.62 |
+|  tree  | 70.86 | 82.96 |
+|  road  | 89.16 | 95.27 |
+| grass  | 80.71 | 89.62 |
+| water  | 85.96 | 90.18 |
+|  bldg  | 79.33 | 91.36 |
+|  mntn  | 39.46 | 49.46 |
+| fg obj | 72.99 | 82.13 |
++--------+-------+-------+
+2023-02-11 22:28:41,864 - mmseg - INFO - Summary:
+2023-02-11 22:28:41,864 - mmseg - INFO - 
++-------+------+-------+
+|  aAcc | mIoU |  mAcc |
++-------+------+-------+
+| 89.34 | 76.0 | 84.33 |
++-------+------+-------+
+2023-02-11 22:28:41,865 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:28:41,865 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8934, mIoU: 0.7600, mAcc: 0.8433, IoU.sky: 0.8954, IoU.tree: 0.7086, IoU.road: 0.8916, IoU.grass: 0.8071, IoU.water: 0.8596, IoU.bldg: 0.7933, IoU.mntn: 0.3946, IoU.fg obj: 0.7299, Acc.sky: 0.9362, Acc.tree: 0.8296, Acc.road: 0.9527, Acc.grass: 0.8962, Acc.water: 0.9018, Acc.bldg: 0.9136, Acc.mntn: 0.4946, Acc.fg obj: 0.8213
+2023-02-11 22:29:38,682 - mmseg - INFO - Iter [25200/40000]	lr: 4.146e-03, eta: 1:13:59, time: 0.296, data_time: 0.069, memory: 14046, decode.loss_ce: 0.0787, decode.acc_seg: 96.6088, aux.loss_ce: 0.0389, aux.acc_seg: 96.0137, loss: 0.1175
+2023-02-11 22:30:37,592 - mmseg - INFO - Iter [25400/40000]	lr: 4.097e-03, eta: 1:12:58, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0799, decode.acc_seg: 96.6251, aux.loss_ce: 0.0392, aux.acc_seg: 96.0645, loss: 0.1192
+2023-02-11 22:31:09,209 - mmseg - INFO - per class results:
+2023-02-11 22:31:09,210 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.48 | 93.43 |
+|  tree  | 70.75 | 81.97 |
+|  road  | 88.85 | 95.25 |
+| grass  | 80.79 | 89.83 |
+| water  | 83.82 | 87.79 |
+|  bldg  | 79.08 | 92.13 |
+|  mntn  | 38.88 |  46.8 |
+| fg obj | 73.63 | 82.65 |
++--------+-------+-------+
+2023-02-11 22:31:09,210 - mmseg - INFO - Summary:
+2023-02-11 22:31:09,211 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.29 | 75.66 | 83.73 |
++-------+-------+-------+
+2023-02-11 22:31:09,211 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8929, mIoU: 0.7566, mAcc: 0.8373, IoU.sky: 0.8948, IoU.tree: 0.7075, IoU.road: 0.8885, IoU.grass: 0.8079, IoU.water: 0.8382, IoU.bldg: 0.7908, IoU.mntn: 0.3888, IoU.fg obj: 0.7363, Acc.sky: 0.9343, Acc.tree: 0.8197, Acc.road: 0.9525, Acc.grass: 0.8983, Acc.water: 0.8779, Acc.bldg: 0.9213, Acc.mntn: 0.4680, Acc.fg obj: 0.8265
+2023-02-11 22:31:38,682 - mmseg - INFO - Iter [25600/40000]	lr: 4.048e-03, eta: 1:12:00, time: 0.317, data_time: 0.089, memory: 14046, decode.loss_ce: 0.0789, decode.acc_seg: 96.6770, aux.loss_ce: 0.0394, aux.acc_seg: 96.1027, loss: 0.1183
+2023-02-11 22:32:37,526 - mmseg - INFO - Iter [25800/40000]	lr: 3.998e-03, eta: 1:10:59, time: 0.294, data_time: 0.067, memory: 14046, decode.loss_ce: 0.0758, decode.acc_seg: 96.7363, aux.loss_ce: 0.0371, aux.acc_seg: 96.2156, loss: 0.1129
+2023-02-11 22:33:34,308 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:33:34,308 - mmseg - INFO - Iter [26000/40000]	lr: 3.949e-03, eta: 1:09:58, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0782, decode.acc_seg: 96.6910, aux.loss_ce: 0.0380, aux.acc_seg: 96.1762, loss: 0.1162
+2023-02-11 22:33:36,524 - mmseg - INFO - per class results:
+2023-02-11 22:33:36,525 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.39 | 93.09 |
+|  tree  |  71.0 | 82.69 |
+|  road  | 88.99 | 95.49 |
+| grass  |  81.0 | 89.43 |
+| water  | 84.01 |  88.1 |
+|  bldg  | 79.58 | 92.05 |
+|  mntn  | 38.77 | 45.55 |
+| fg obj | 73.99 |  83.2 |
++--------+-------+-------+
+2023-02-11 22:33:36,525 - mmseg - INFO - Summary:
+2023-02-11 22:33:36,525 - mmseg - INFO - 
++-------+-------+------+
+|  aAcc |  mIoU | mAcc |
++-------+-------+------+
+| 89.44 | 75.84 | 83.7 |
++-------+-------+------+
+2023-02-11 22:33:36,525 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:33:36,525 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8944, mIoU: 0.7584, mAcc: 0.8370, IoU.sky: 0.8939, IoU.tree: 0.7100, IoU.road: 0.8899, IoU.grass: 0.8100, IoU.water: 0.8401, IoU.bldg: 0.7958, IoU.mntn: 0.3877, IoU.fg obj: 0.7399, Acc.sky: 0.9309, Acc.tree: 0.8269, Acc.road: 0.9549, Acc.grass: 0.8943, Acc.water: 0.8810, Acc.bldg: 0.9205, Acc.mntn: 0.4555, Acc.fg obj: 0.8320
+2023-02-11 22:34:35,445 - mmseg - INFO - Iter [26200/40000]	lr: 3.899e-03, eta: 1:08:58, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0764, decode.acc_seg: 96.7183, aux.loss_ce: 0.0374, aux.acc_seg: 96.1860, loss: 0.1138
+2023-02-11 22:35:34,301 - mmseg - INFO - Iter [26400/40000]	lr: 3.850e-03, eta: 1:07:58, time: 0.294, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0756, decode.acc_seg: 96.7253, aux.loss_ce: 0.0371, aux.acc_seg: 96.1961, loss: 0.1127
+2023-02-11 22:36:05,951 - mmseg - INFO - per class results:
+2023-02-11 22:36:05,952 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.39 | 93.07 |
+|  tree  | 71.14 | 83.31 |
+|  road  |  89.3 | 95.62 |
+| grass  | 81.65 | 90.26 |
+| water  | 84.45 | 88.92 |
+|  bldg  | 78.37 | 91.69 |
+|  mntn  | 35.82 | 41.71 |
+| fg obj |  72.2 | 81.08 |
++--------+-------+-------+
+2023-02-11 22:36:05,952 - mmseg - INFO - Summary:
+2023-02-11 22:36:05,952 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.17 | 75.29 | 83.21 |
++-------+-------+-------+
+2023-02-11 22:36:05,952 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8917, mIoU: 0.7529, mAcc: 0.8321, IoU.sky: 0.8939, IoU.tree: 0.7114, IoU.road: 0.8930, IoU.grass: 0.8165, IoU.water: 0.8445, IoU.bldg: 0.7837, IoU.mntn: 0.3582, IoU.fg obj: 0.7220, Acc.sky: 0.9307, Acc.tree: 0.8331, Acc.road: 0.9562, Acc.grass: 0.9026, Acc.water: 0.8892, Acc.bldg: 0.9169, Acc.mntn: 0.4171, Acc.fg obj: 0.8108
+2023-02-11 22:36:33,376 - mmseg - INFO - Iter [26600/40000]	lr: 3.800e-03, eta: 1:06:57, time: 0.296, data_time: 0.069, memory: 14046, decode.loss_ce: 0.0783, decode.acc_seg: 96.6990, aux.loss_ce: 0.0385, aux.acc_seg: 96.1779, loss: 0.1168
+2023-02-11 22:37:32,326 - mmseg - INFO - Iter [26800/40000]	lr: 3.750e-03, eta: 1:05:57, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0776, decode.acc_seg: 96.6754, aux.loss_ce: 0.0385, aux.acc_seg: 96.0901, loss: 0.1162
+2023-02-11 22:38:31,266 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:38:31,267 - mmseg - INFO - Iter [27000/40000]	lr: 3.700e-03, eta: 1:04:56, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0793, decode.acc_seg: 96.7035, aux.loss_ce: 0.0391, aux.acc_seg: 96.1274, loss: 0.1184
+2023-02-11 22:38:33,497 - mmseg - INFO - per class results:
+2023-02-11 22:38:33,498 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.21 | 93.35 |
+|  tree  | 71.06 | 83.82 |
+|  road  | 88.86 | 95.33 |
+| grass  | 80.58 | 90.21 |
+| water  | 83.84 | 87.74 |
+|  bldg  | 79.72 | 91.16 |
+|  mntn  | 38.54 | 45.07 |
+| fg obj | 74.18 | 83.01 |
++--------+-------+-------+
+2023-02-11 22:38:33,498 - mmseg - INFO - Summary:
+2023-02-11 22:38:33,498 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.42 | 75.75 | 83.71 |
++-------+-------+-------+
+2023-02-11 22:38:33,498 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:38:33,498 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8942, mIoU: 0.7575, mAcc: 0.8371, IoU.sky: 0.8921, IoU.tree: 0.7106, IoU.road: 0.8886, IoU.grass: 0.8058, IoU.water: 0.8384, IoU.bldg: 0.7972, IoU.mntn: 0.3854, IoU.fg obj: 0.7418, Acc.sky: 0.9335, Acc.tree: 0.8382, Acc.road: 0.9533, Acc.grass: 0.9021, Acc.water: 0.8774, Acc.bldg: 0.9116, Acc.mntn: 0.4507, Acc.fg obj: 0.8301
+2023-02-11 22:39:32,421 - mmseg - INFO - Iter [27200/40000]	lr: 3.651e-03, eta: 1:03:57, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0749, decode.acc_seg: 96.8077, aux.loss_ce: 0.0364, aux.acc_seg: 96.2970, loss: 0.1114
+2023-02-11 22:40:29,212 - mmseg - INFO - Iter [27400/40000]	lr: 3.601e-03, eta: 1:02:56, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0754, decode.acc_seg: 96.8083, aux.loss_ce: 0.0366, aux.acc_seg: 96.3040, loss: 0.1121
+2023-02-11 22:41:00,975 - mmseg - INFO - per class results:
+2023-02-11 22:41:00,976 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.43 | 93.02 |
+|  tree  | 71.15 | 83.35 |
+|  road  | 88.58 | 95.55 |
+| grass  | 80.97 | 89.71 |
+| water  | 83.46 | 87.81 |
+|  bldg  | 79.47 | 91.72 |
+|  mntn  |  37.3 |  43.7 |
+| fg obj | 73.89 | 82.59 |
++--------+-------+-------+
+2023-02-11 22:41:00,976 - mmseg - INFO - Summary:
+2023-02-11 22:41:00,977 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.35 | 75.53 | 83.43 |
++-------+-------+-------+
+2023-02-11 22:41:00,977 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8935, mIoU: 0.7553, mAcc: 0.8343, IoU.sky: 0.8943, IoU.tree: 0.7115, IoU.road: 0.8858, IoU.grass: 0.8097, IoU.water: 0.8346, IoU.bldg: 0.7947, IoU.mntn: 0.3730, IoU.fg obj: 0.7389, Acc.sky: 0.9302, Acc.tree: 0.8335, Acc.road: 0.9555, Acc.grass: 0.8971, Acc.water: 0.8781, Acc.bldg: 0.9172, Acc.mntn: 0.4370, Acc.fg obj: 0.8259
+2023-02-11 22:41:30,471 - mmseg - INFO - Iter [27600/40000]	lr: 3.551e-03, eta: 1:01:57, time: 0.317, data_time: 0.090, memory: 14046, decode.loss_ce: 0.0752, decode.acc_seg: 96.8277, aux.loss_ce: 0.0367, aux.acc_seg: 96.3159, loss: 0.1119
+2023-02-11 22:42:29,398 - mmseg - INFO - Iter [27800/40000]	lr: 3.500e-03, eta: 1:00:57, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0772, decode.acc_seg: 96.7946, aux.loss_ce: 0.0373, aux.acc_seg: 96.3035, loss: 0.1146
+2023-02-11 22:43:26,172 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:43:26,172 - mmseg - INFO - Iter [28000/40000]	lr: 3.450e-03, eta: 0:59:55, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0730, decode.acc_seg: 96.8583, aux.loss_ce: 0.0355, aux.acc_seg: 96.3785, loss: 0.1085
+2023-02-11 22:43:28,449 - mmseg - INFO - per class results:
+2023-02-11 22:43:28,450 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.41 | 92.75 |
+|  tree  | 71.09 | 83.33 |
+|  road  | 88.78 | 95.56 |
+| grass  | 81.29 | 89.18 |
+| water  | 83.45 | 87.83 |
+|  bldg  | 79.33 | 91.45 |
+|  mntn  | 38.02 | 45.91 |
+| fg obj | 73.73 | 83.12 |
++--------+-------+-------+
+2023-02-11 22:43:28,450 - mmseg - INFO - Summary:
+2023-02-11 22:43:28,450 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.34 | 75.64 | 83.64 |
++-------+-------+-------+
+2023-02-11 22:43:28,450 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:43:28,450 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8934, mIoU: 0.7564, mAcc: 0.8364, IoU.sky: 0.8941, IoU.tree: 0.7109, IoU.road: 0.8878, IoU.grass: 0.8129, IoU.water: 0.8345, IoU.bldg: 0.7933, IoU.mntn: 0.3802, IoU.fg obj: 0.7373, Acc.sky: 0.9275, Acc.tree: 0.8333, Acc.road: 0.9556, Acc.grass: 0.8918, Acc.water: 0.8783, Acc.bldg: 0.9145, Acc.mntn: 0.4591, Acc.fg obj: 0.8312
+2023-02-11 22:44:27,413 - mmseg - INFO - Iter [28200/40000]	lr: 3.400e-03, eta: 0:58:56, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0766, decode.acc_seg: 96.7708, aux.loss_ce: 0.0373, aux.acc_seg: 96.2934, loss: 0.1139
+2023-02-11 22:45:26,327 - mmseg - INFO - Iter [28400/40000]	lr: 3.350e-03, eta: 0:57:56, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0726, decode.acc_seg: 96.8606, aux.loss_ce: 0.0353, aux.acc_seg: 96.3663, loss: 0.1079
+2023-02-11 22:45:57,976 - mmseg - INFO - per class results:
+2023-02-11 22:45:57,977 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.41 |  93.3 |
+|  tree  | 70.73 | 82.51 |
+|  road  | 88.83 | 95.55 |
+| grass  | 80.71 | 89.67 |
+| water  | 83.71 | 87.73 |
+|  bldg  | 79.22 | 91.63 |
+|  mntn  | 37.56 | 47.36 |
+| fg obj | 73.85 | 82.48 |
++--------+-------+-------+
+2023-02-11 22:45:57,977 - mmseg - INFO - Summary:
+2023-02-11 22:45:57,977 - mmseg - INFO - 
++-------+------+-------+
+|  aAcc | mIoU |  mAcc |
++-------+------+-------+
+| 89.29 | 75.5 | 83.78 |
++-------+------+-------+
+2023-02-11 22:45:57,977 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8929, mIoU: 0.7550, mAcc: 0.8378, IoU.sky: 0.8941, IoU.tree: 0.7073, IoU.road: 0.8883, IoU.grass: 0.8071, IoU.water: 0.8371, IoU.bldg: 0.7922, IoU.mntn: 0.3756, IoU.fg obj: 0.7385, Acc.sky: 0.9330, Acc.tree: 0.8251, Acc.road: 0.9555, Acc.grass: 0.8967, Acc.water: 0.8773, Acc.bldg: 0.9163, Acc.mntn: 0.4736, Acc.fg obj: 0.8248
+2023-02-11 22:46:27,445 - mmseg - INFO - Iter [28600/40000]	lr: 3.299e-03, eta: 0:56:57, time: 0.317, data_time: 0.089, memory: 14046, decode.loss_ce: 0.0761, decode.acc_seg: 96.8331, aux.loss_ce: 0.0370, aux.acc_seg: 96.3455, loss: 0.1130
+2023-02-11 22:47:24,274 - mmseg - INFO - Iter [28800/40000]	lr: 3.249e-03, eta: 0:55:56, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0737, decode.acc_seg: 96.8558, aux.loss_ce: 0.0360, aux.acc_seg: 96.3605, loss: 0.1097
+2023-02-11 22:48:23,169 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:48:23,169 - mmseg - INFO - Iter [29000/40000]	lr: 3.198e-03, eta: 0:54:56, time: 0.294, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0744, decode.acc_seg: 96.8635, aux.loss_ce: 0.0360, aux.acc_seg: 96.3980, loss: 0.1104
+2023-02-11 22:48:25,458 - mmseg - INFO - per class results:
+2023-02-11 22:48:25,459 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.52 |  93.5 |
+|  tree  | 70.97 | 83.74 |
+|  road  | 88.87 | 95.56 |
+| grass  | 81.56 | 89.59 |
+| water  | 83.65 |  87.8 |
+|  bldg  | 79.29 | 91.49 |
+|  mntn  | 37.57 | 44.66 |
+| fg obj | 73.97 | 82.32 |
++--------+-------+-------+
+2023-02-11 22:48:25,459 - mmseg - INFO - Summary:
+2023-02-11 22:48:25,459 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.39 | 75.67 | 83.58 |
++-------+-------+-------+
+2023-02-11 22:48:25,459 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:48:25,459 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8939, mIoU: 0.7567, mAcc: 0.8358, IoU.sky: 0.8952, IoU.tree: 0.7097, IoU.road: 0.8887, IoU.grass: 0.8156, IoU.water: 0.8365, IoU.bldg: 0.7929, IoU.mntn: 0.3757, IoU.fg obj: 0.7397, Acc.sky: 0.9350, Acc.tree: 0.8374, Acc.road: 0.9556, Acc.grass: 0.8959, Acc.water: 0.8780, Acc.bldg: 0.9149, Acc.mntn: 0.4466, Acc.fg obj: 0.8232
+2023-02-11 22:49:24,392 - mmseg - INFO - Iter [29200/40000]	lr: 3.147e-03, eta: 0:53:56, time: 0.306, data_time: 0.079, memory: 14046, decode.loss_ce: 0.0736, decode.acc_seg: 96.8571, aux.loss_ce: 0.0359, aux.acc_seg: 96.3577, loss: 0.1095
+2023-02-11 22:50:21,186 - mmseg - INFO - Iter [29400/40000]	lr: 3.096e-03, eta: 0:52:55, time: 0.284, data_time: 0.057, memory: 14046, decode.loss_ce: 0.0757, decode.acc_seg: 96.8590, aux.loss_ce: 0.0368, aux.acc_seg: 96.3630, loss: 0.1125
+2023-02-11 22:50:52,814 - mmseg - INFO - per class results:
+2023-02-11 22:50:52,815 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   | 89.58 | 93.74 |
+|  tree  | 71.63 | 84.07 |
+|  road  | 88.83 | 95.69 |
+| grass  | 81.29 | 89.55 |
+| water  | 83.76 | 88.06 |
+|  bldg  | 79.75 | 91.23 |
+|  mntn  |  39.4 | 47.41 |
+| fg obj |  73.9 | 82.38 |
++--------+-------+-------+
+2023-02-11 22:50:52,815 - mmseg - INFO - Summary:
+2023-02-11 22:50:52,815 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.51 | 76.01 | 84.02 |
++-------+-------+-------+
+2023-02-11 22:50:52,816 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8951, mIoU: 0.7601, mAcc: 0.8402, IoU.sky: 0.8958, IoU.tree: 0.7163, IoU.road: 0.8883, IoU.grass: 0.8129, IoU.water: 0.8376, IoU.bldg: 0.7975, IoU.mntn: 0.3940, IoU.fg obj: 0.7390, Acc.sky: 0.9374, Acc.tree: 0.8407, Acc.road: 0.9569, Acc.grass: 0.8955, Acc.water: 0.8806, Acc.bldg: 0.9123, Acc.mntn: 0.4741, Acc.fg obj: 0.8238
+2023-02-11 22:51:22,236 - mmseg - INFO - Iter [29600/40000]	lr: 3.045e-03, eta: 0:51:56, time: 0.316, data_time: 0.089, memory: 14046, decode.loss_ce: 0.0713, decode.acc_seg: 96.9074, aux.loss_ce: 0.0346, aux.acc_seg: 96.4419, loss: 0.1059
+2023-02-11 22:52:21,107 - mmseg - INFO - Iter [29800/40000]	lr: 2.994e-03, eta: 0:50:56, time: 0.294, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0739, decode.acc_seg: 96.8753, aux.loss_ce: 0.0356, aux.acc_seg: 96.4031, loss: 0.1094
+2023-02-11 22:53:19,958 - mmseg - INFO - Saving checkpoint at 30000 iterations
+2023-02-11 22:53:20,936 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:53:20,936 - mmseg - INFO - Iter [30000/40000]	lr: 2.943e-03, eta: 0:49:56, time: 0.299, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0723, decode.acc_seg: 96.9081, aux.loss_ce: 0.0351, aux.acc_seg: 96.4248, loss: 0.1074
+2023-02-11 22:53:23,168 - mmseg - INFO - per class results:
+2023-02-11 22:53:23,169 - mmseg - INFO - 
++--------+-------+-------+
+| Class  |  IoU  |  Acc  |
++--------+-------+-------+
+|  sky   |  89.4 | 93.37 |
+|  tree  | 71.31 | 83.36 |
+|  road  | 88.85 | 95.48 |
+| grass  | 81.64 | 89.89 |
+| water  | 83.83 | 87.54 |
+|  bldg  | 79.25 | 91.66 |
+|  mntn  |  38.8 | 45.58 |
+| fg obj | 73.51 | 82.47 |
++--------+-------+-------+
+2023-02-11 22:53:23,169 - mmseg - INFO - Summary:
+2023-02-11 22:53:23,170 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 89.38 | 75.82 | 83.67 |
++-------+-------+-------+
+2023-02-11 22:53:23,170 - mmseg - INFO - Exp name: pspnet.py
+2023-02-11 22:53:23,170 - mmseg - INFO - Iter(val) [143]	aAcc: 0.8938, mIoU: 0.7582, mAcc: 0.8367, IoU.sky: 0.8940, IoU.tree: 0.7131, IoU.road: 0.8885, IoU.grass: 0.8164, IoU.water: 0.8383, IoU.bldg: 0.7925, IoU.mntn: 0.3880, IoU.fg obj: 0.7351, Acc.sky: 0.9337, Acc.tree: 0.8336, Acc.road: 0.9548, Acc.grass: 0.8989, Acc.water: 0.8754, Acc.bldg: 0.9166, Acc.mntn: 0.4558, Acc.fg obj: 0.8247
+2023-02-11 22:54:19,985 - mmseg - INFO - Iter [30200/40000]	lr: 2.892e-03, eta: 0:48:56, time: 0.295, data_time: 0.068, memory: 14046, decode.loss_ce: 0.0740, decode.acc_seg: 96.8852, aux.loss_ce: 0.0360, aux.acc_seg: 96.4076, loss: 0.1100

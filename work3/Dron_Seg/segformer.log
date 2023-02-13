@@ -1,0 +1,1494 @@
+2023-02-12 23:07:12,241 - mmseg - INFO - Multi-processing start method is `None`
+2023-02-12 23:07:12,242 - mmseg - INFO - OpenCV num_threads is `16
+2023-02-12 23:07:12,295 - mmseg - INFO - Environment info:
+------------------------------------------------------------
+sys.platform: linux
+Python: 3.8.16 (default, Jan 17 2023, 23:13:24) [GCC 11.2.0]
+CUDA available: True
+GPU 0: NVIDIA GeForce RTX 3090
+CUDA_HOME: /usr/local/cuda
+NVCC: Cuda compilation tools, release 11.3, V11.3.109
+GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+PyTorch: 1.11.0+cu113
+PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.5.2 (Git Hash a9302535553c73243c632ad3c4c80beec3d19a1e)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.3
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.2
+  - Magma 2.5.2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.3, CUDNN_VERSION=8.2.0, CXX_COMPILER=/opt/rh/devtoolset-7/root/usr/bin/c++, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.11.0, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=OFF, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+TorchVision: 0.12.0+cu113
+OpenCV: 4.6.0
+MMCV: 1.7.0
+MMCV Compiler: GCC 9.3
+MMCV CUDA Compiler: 11.3
+MMSegmentation: 0.30.0+8ea3ea3
+------------------------------------------------------------
+
+2023-02-12 23:07:12,295 - mmseg - INFO - Distributed training: False
+2023-02-12 23:07:13,751 - mmseg - INFO - Config:
+norm_cfg = dict(type='SyncBN', requires_grad=True)
+model = dict(
+    type='EncoderDecoder',
+    pretrained=None,
+    backbone=dict(
+        type='MixVisionTransformer',
+        in_channels=3,
+        embed_dims=64,
+        num_stages=4,
+        num_layers=[2, 2, 2, 2],
+        num_heads=[1, 2, 5, 8],
+        patch_sizes=[7, 3, 3, 3],
+        sr_ratios=[8, 4, 2, 1],
+        out_indices=(0, 1, 2, 3),
+        mlp_ratio=4,
+        qkv_bias=True,
+        drop_rate=0.0,
+        attn_drop_rate=0.0,
+        drop_path_rate=0.1,
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint=
+            'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/segformer/mit_b0_20220624-7e0fe6dd.pth'
+        )),
+    decode_head=dict(
+        type='SegformerHead',
+        in_channels=[64, 128, 320, 512],
+        in_index=[0, 1, 2, 3],
+        channels=256,
+        dropout_ratio=0.1,
+        num_classes=8,
+        norm_cfg=dict(type='SyncBN', requires_grad=True),
+        align_corners=False,
+        loss_decode=dict(
+            type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0)),
+    train_cfg=dict(),
+    test_cfg=dict(mode='slide', crop_size=(1024, 1024), stride=(768, 768)))
+dataset_type = 'DroneDataset'
+data_root = '/root/autodl-tmp/mmsegmentation/data/classes_dataset'
+img_dir = '/root/autodl-tmp/mmsegmentation/data/classes_dataset/original_images'
+ann_dir = '/root/autodl-tmp/mmsegmentation/data/classes_dataset/label_images_semantic'
+split_dir = '/root/autodl-tmp/mmsegmentation/data/iccv09Data/splits/train.txt'
+img_scale = (2048, 1024)
+crop_size = (1024, 1024)
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+train_pipeline = [
+    dict(type='Resize', img_scale=(2048, 1024), ratio_range=(0.5, 2.0)),
+    dict(type='RandomCrop', crop_size=(1024, 1024), cat_max_ratio=0.75)
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=(320, 240),
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip'),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img'])
+        ])
+]
+data = dict(
+    samples_per_gpu=2,
+    workers_per_gpu=1,
+    train=dict(
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations'),
+            dict(
+                type='Resize',
+                img_scale=(320, 240),
+                ratio_range=(0.5, 2.0),
+                keep_ratio=True),
+            dict(type='RandomCrop', crop_size=(256, 256), cat_max_ratio=0.75),
+            dict(type='RandomFlip', prob=0.5),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size=(256, 256), pad_val=0, seg_pad_val=255),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_semantic_seg'])
+        ],
+        type='DroneDataset',
+        data_root='/root/autodl-tmp/mmsegmentation/data/classes_dataset',
+        img_dir=
+        '/root/autodl-tmp/mmsegmentation/data/classes_dataset/original_images',
+        ann_dir=
+        '/root/autodl-tmp/mmsegmentation/data/classes_dataset/label_images_semantic',
+        split=
+        '/root/autodl-tmp/mmsegmentation/data/classes_dataset/splits/train.txt'
+    ),
+    val=dict(
+        type='DroneDataset',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(320, 240),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ],
+        data_root='/root/autodl-tmp/mmsegmentation/data/classes_dataset',
+        img_dir=
+        '/root/autodl-tmp/mmsegmentation/data/classes_dataset/original_images',
+        ann_dir=
+        '/root/autodl-tmp/mmsegmentation/data/classes_dataset/label_images_semantic',
+        split=
+        '/root/autodl-tmp/mmsegmentation/data/classes_dataset/splits/val.txt'),
+    test=dict(
+        type='DroneDataset',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(320, 240),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ],
+        data_root='/root/autodl-tmp/mmsegmentation/data/classes_dataset',
+        img_dir=
+        '/root/autodl-tmp/mmsegmentation/data/classes_dataset/original_images',
+        ann_dir=
+        '/root/autodl-tmp/mmsegmentation/data/classes_dataset/label_images_semantic',
+        split='/root/autodl-tmp/mmsegmentation/data/iccv09Data/splits/val.txt')
+)
+checkpoint = 'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/segformer/mit_b0_20220624-7e0fe6dd.pth'
+load_from = None
+log_config = dict(
+    interval=200, hooks=[dict(type='TextLoggerHook', by_epoch=False)])
+dist_params = dict(backend='nccl')
+log_level = 'INFO'
+resume_from = None
+workflow = [('train', 1)]
+cudnn_benchmark = True
+optimizer = dict(
+    type='AdamW',
+    lr=6e-05,
+    betas=(0.9, 0.999),
+    weight_decay=0.01,
+    paramwise_cfg=dict(
+        custom_keys=dict(
+            pos_block=dict(decay_mult=0.0),
+            norm=dict(decay_mult=0.0),
+            head=dict(lr_mult=10.0))))
+optimizer_config = dict()
+lr_config = dict(
+    policy='poly',
+    warmup='linear',
+    warmup_iters=1500,
+    warmup_ratio=1e-06,
+    power=1.0,
+    min_lr=0.0,
+    by_epoch=False)
+runner = dict(type='IterBasedRunner', max_iters=40000)
+checkpoint_config = dict(by_epoch=False, interval=5000)
+evaluation = dict(interval=5000, metric='mIoU', pre_eval=True)
+randomness = dict(seed=0)
+work_dir = 'work/segformer'
+gpu_ids = [0]
+auto_resume = False
+
+2023-02-12 23:07:13,751 - mmseg - INFO - Set random seed to 1986809610, deterministic: False
+2023-02-12 23:07:13,849 - mmseg - INFO - initialize MixVisionTransformer with init_cfg {'type': 'Pretrained', 'checkpoint': 'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/segformer/mit_b0_20220624-7e0fe6dd.pth'}
+2023-02-12 23:07:13,883 - mmseg - INFO - initialize SegformerHead with init_cfg {'type': 'Normal', 'std': 0.01, 'override': {'name': 'conv_seg'}}
+Name of parameter - Initialization information
+
+backbone.layers.0.0.projection.weight - torch.Size([64, 3, 7, 7]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.0.projection.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.0.norm.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.0.norm.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.norm1.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.norm1.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.attn.attn.in_proj_weight - torch.Size([192, 64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.attn.attn.in_proj_bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.attn.attn.out_proj.weight - torch.Size([64, 64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.attn.attn.out_proj.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.attn.sr.weight - torch.Size([64, 64, 8, 8]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.attn.sr.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.attn.norm.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.attn.norm.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.norm2.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.norm2.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.ffn.layers.0.weight - torch.Size([256, 64, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.ffn.layers.0.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.ffn.layers.1.weight - torch.Size([256, 1, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.ffn.layers.1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.ffn.layers.4.weight - torch.Size([64, 256, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.0.ffn.layers.4.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.norm1.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.norm1.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.attn.attn.in_proj_weight - torch.Size([192, 64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.attn.attn.in_proj_bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.attn.attn.out_proj.weight - torch.Size([64, 64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.attn.attn.out_proj.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.attn.sr.weight - torch.Size([64, 64, 8, 8]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.attn.sr.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.attn.norm.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.attn.norm.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.norm2.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.norm2.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.ffn.layers.0.weight - torch.Size([256, 64, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.ffn.layers.0.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.ffn.layers.1.weight - torch.Size([256, 1, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.ffn.layers.1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.ffn.layers.4.weight - torch.Size([64, 256, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.1.1.ffn.layers.4.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.2.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.0.2.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.0.projection.weight - torch.Size([128, 64, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.0.projection.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.0.norm.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.0.norm.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.norm1.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.norm1.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.attn.attn.in_proj_weight - torch.Size([384, 128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.attn.attn.in_proj_bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.attn.attn.out_proj.weight - torch.Size([128, 128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.attn.attn.out_proj.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.attn.sr.weight - torch.Size([128, 128, 4, 4]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.attn.sr.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.attn.norm.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.attn.norm.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.norm2.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.norm2.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.ffn.layers.0.weight - torch.Size([512, 128, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.ffn.layers.0.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.ffn.layers.1.weight - torch.Size([512, 1, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.ffn.layers.1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.ffn.layers.4.weight - torch.Size([128, 512, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.0.ffn.layers.4.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.norm1.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.norm1.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.attn.attn.in_proj_weight - torch.Size([384, 128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.attn.attn.in_proj_bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.attn.attn.out_proj.weight - torch.Size([128, 128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.attn.attn.out_proj.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.attn.sr.weight - torch.Size([128, 128, 4, 4]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.attn.sr.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.attn.norm.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.attn.norm.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.norm2.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.norm2.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.ffn.layers.0.weight - torch.Size([512, 128, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.ffn.layers.0.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.ffn.layers.1.weight - torch.Size([512, 1, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.ffn.layers.1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.ffn.layers.4.weight - torch.Size([128, 512, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.1.1.ffn.layers.4.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.2.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.1.2.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.0.projection.weight - torch.Size([320, 128, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.0.projection.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.0.norm.weight - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.0.norm.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.norm1.weight - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.norm1.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.attn.attn.in_proj_weight - torch.Size([960, 320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.attn.attn.in_proj_bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.attn.attn.out_proj.weight - torch.Size([320, 320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.attn.attn.out_proj.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.attn.sr.weight - torch.Size([320, 320, 2, 2]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.attn.sr.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.attn.norm.weight - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.attn.norm.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.norm2.weight - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.norm2.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.ffn.layers.0.weight - torch.Size([1280, 320, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.ffn.layers.0.bias - torch.Size([1280]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.ffn.layers.1.weight - torch.Size([1280, 1, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.ffn.layers.1.bias - torch.Size([1280]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.ffn.layers.4.weight - torch.Size([320, 1280, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.0.ffn.layers.4.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.norm1.weight - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.norm1.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.attn.attn.in_proj_weight - torch.Size([960, 320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.attn.attn.in_proj_bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.attn.attn.out_proj.weight - torch.Size([320, 320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.attn.attn.out_proj.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.attn.sr.weight - torch.Size([320, 320, 2, 2]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.attn.sr.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.attn.norm.weight - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.attn.norm.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.norm2.weight - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.norm2.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.ffn.layers.0.weight - torch.Size([1280, 320, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.ffn.layers.0.bias - torch.Size([1280]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.ffn.layers.1.weight - torch.Size([1280, 1, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.ffn.layers.1.bias - torch.Size([1280]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.ffn.layers.4.weight - torch.Size([320, 1280, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.1.1.ffn.layers.4.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.2.weight - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.2.2.bias - torch.Size([320]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.0.projection.weight - torch.Size([512, 320, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.0.projection.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.0.norm.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.0.norm.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.attn.attn.in_proj_weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.attn.attn.in_proj_bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.attn.attn.out_proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.attn.attn.out_proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.ffn.layers.0.weight - torch.Size([2048, 512, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.ffn.layers.0.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.ffn.layers.1.weight - torch.Size([2048, 1, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.ffn.layers.1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.ffn.layers.4.weight - torch.Size([512, 2048, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.0.ffn.layers.4.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.attn.attn.in_proj_weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.attn.attn.in_proj_bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.attn.attn.out_proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.attn.attn.out_proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.ffn.layers.0.weight - torch.Size([2048, 512, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.ffn.layers.0.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.ffn.layers.1.weight - torch.Size([2048, 1, 3, 3]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.ffn.layers.1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.ffn.layers.4.weight - torch.Size([512, 2048, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.1.1.ffn.layers.4.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+backbone.layers.3.2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.conv_seg.weight - torch.Size([8, 256, 1, 1]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+decode_head.conv_seg.bias - torch.Size([8]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+decode_head.convs.0.conv.weight - torch.Size([256, 64, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.0.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.0.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.1.conv.weight - torch.Size([256, 128, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.1.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.1.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.2.conv.weight - torch.Size([256, 320, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.2.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.2.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.3.conv.weight - torch.Size([256, 512, 1, 1]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.3.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.convs.3.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.fusion_conv.conv.weight - torch.Size([256, 1024, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+decode_head.fusion_conv.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+
+decode_head.fusion_conv.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of EncoderDecoder  
+2023-02-12 23:07:13,888 - mmseg - INFO - EncoderDecoder(
+  (backbone): MixVisionTransformer(
+    (layers): ModuleList(
+      (0): ModuleList(
+        (0): PatchEmbed(
+          (projection): Conv2d(3, 64, kernel_size=(7, 7), stride=(4, 4), padding=(3, 3))
+          (norm): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+        )
+        (1): ModuleList(
+          (0): TransformerEncoderLayer(
+            (norm1): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+            (attn): EfficientMultiheadAttention(
+              (attn): MultiheadAttention(
+                (out_proj): NonDynamicallyQuantizableLinear(in_features=64, out_features=64, bias=True)
+              )
+              (proj_drop): Dropout(p=0.0, inplace=False)
+              (dropout_layer): DropPath()
+              (sr): Conv2d(64, 64, kernel_size=(8, 8), stride=(8, 8))
+              (norm): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+            )
+            (norm2): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+            (ffn): MixFFN(
+              (activate): GELU()
+              (layers): Sequential(
+                (0): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
+                (2): GELU()
+                (3): Dropout(p=0.0, inplace=False)
+                (4): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1))
+                (5): Dropout(p=0.0, inplace=False)
+              )
+              (dropout_layer): DropPath()
+            )
+          )
+          (1): TransformerEncoderLayer(
+            (norm1): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+            (attn): EfficientMultiheadAttention(
+              (attn): MultiheadAttention(
+                (out_proj): NonDynamicallyQuantizableLinear(in_features=64, out_features=64, bias=True)
+              )
+              (proj_drop): Dropout(p=0.0, inplace=False)
+              (dropout_layer): DropPath()
+              (sr): Conv2d(64, 64, kernel_size=(8, 8), stride=(8, 8))
+              (norm): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+            )
+            (norm2): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+            (ffn): MixFFN(
+              (activate): GELU()
+              (layers): Sequential(
+                (0): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
+                (2): GELU()
+                (3): Dropout(p=0.0, inplace=False)
+                (4): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1))
+                (5): Dropout(p=0.0, inplace=False)
+              )
+              (dropout_layer): DropPath()
+            )
+          )
+        )
+        (2): LayerNorm((64,), eps=1e-06, elementwise_affine=True)
+      )
+      (1): ModuleList(
+        (0): PatchEmbed(
+          (projection): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+          (norm): LayerNorm((128,), eps=1e-06, elementwise_affine=True)
+        )
+        (1): ModuleList(
+          (0): TransformerEncoderLayer(
+            (norm1): LayerNorm((128,), eps=1e-06, elementwise_affine=True)
+            (attn): EfficientMultiheadAttention(
+              (attn): MultiheadAttention(
+                (out_proj): NonDynamicallyQuantizableLinear(in_features=128, out_features=128, bias=True)
+              )
+              (proj_drop): Dropout(p=0.0, inplace=False)
+              (dropout_layer): DropPath()
+              (sr): Conv2d(128, 128, kernel_size=(4, 4), stride=(4, 4))
+              (norm): LayerNorm((128,), eps=1e-06, elementwise_affine=True)
+            )
+            (norm2): LayerNorm((128,), eps=1e-06, elementwise_affine=True)
+            (ffn): MixFFN(
+              (activate): GELU()
+              (layers): Sequential(
+                (0): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512)
+                (2): GELU()
+                (3): Dropout(p=0.0, inplace=False)
+                (4): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1))
+                (5): Dropout(p=0.0, inplace=False)
+              )
+              (dropout_layer): DropPath()
+            )
+          )
+          (1): TransformerEncoderLayer(
+            (norm1): LayerNorm((128,), eps=1e-06, elementwise_affine=True)
+            (attn): EfficientMultiheadAttention(
+              (attn): MultiheadAttention(
+                (out_proj): NonDynamicallyQuantizableLinear(in_features=128, out_features=128, bias=True)
+              )
+              (proj_drop): Dropout(p=0.0, inplace=False)
+              (dropout_layer): DropPath()
+              (sr): Conv2d(128, 128, kernel_size=(4, 4), stride=(4, 4))
+              (norm): LayerNorm((128,), eps=1e-06, elementwise_affine=True)
+            )
+            (norm2): LayerNorm((128,), eps=1e-06, elementwise_affine=True)
+            (ffn): MixFFN(
+              (activate): GELU()
+              (layers): Sequential(
+                (0): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512)
+                (2): GELU()
+                (3): Dropout(p=0.0, inplace=False)
+                (4): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1))
+                (5): Dropout(p=0.0, inplace=False)
+              )
+              (dropout_layer): DropPath()
+            )
+          )
+        )
+        (2): LayerNorm((128,), eps=1e-06, elementwise_affine=True)
+      )
+      (2): ModuleList(
+        (0): PatchEmbed(
+          (projection): Conv2d(128, 320, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+          (norm): LayerNorm((320,), eps=1e-06, elementwise_affine=True)
+        )
+        (1): ModuleList(
+          (0): TransformerEncoderLayer(
+            (norm1): LayerNorm((320,), eps=1e-06, elementwise_affine=True)
+            (attn): EfficientMultiheadAttention(
+              (attn): MultiheadAttention(
+                (out_proj): NonDynamicallyQuantizableLinear(in_features=320, out_features=320, bias=True)
+              )
+              (proj_drop): Dropout(p=0.0, inplace=False)
+              (dropout_layer): DropPath()
+              (sr): Conv2d(320, 320, kernel_size=(2, 2), stride=(2, 2))
+              (norm): LayerNorm((320,), eps=1e-06, elementwise_affine=True)
+            )
+            (norm2): LayerNorm((320,), eps=1e-06, elementwise_affine=True)
+            (ffn): MixFFN(
+              (activate): GELU()
+              (layers): Sequential(
+                (0): Conv2d(320, 1280, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1280)
+                (2): GELU()
+                (3): Dropout(p=0.0, inplace=False)
+                (4): Conv2d(1280, 320, kernel_size=(1, 1), stride=(1, 1))
+                (5): Dropout(p=0.0, inplace=False)
+              )
+              (dropout_layer): DropPath()
+            )
+          )
+          (1): TransformerEncoderLayer(
+            (norm1): LayerNorm((320,), eps=1e-06, elementwise_affine=True)
+            (attn): EfficientMultiheadAttention(
+              (attn): MultiheadAttention(
+                (out_proj): NonDynamicallyQuantizableLinear(in_features=320, out_features=320, bias=True)
+              )
+              (proj_drop): Dropout(p=0.0, inplace=False)
+              (dropout_layer): DropPath()
+              (sr): Conv2d(320, 320, kernel_size=(2, 2), stride=(2, 2))
+              (norm): LayerNorm((320,), eps=1e-06, elementwise_affine=True)
+            )
+            (norm2): LayerNorm((320,), eps=1e-06, elementwise_affine=True)
+            (ffn): MixFFN(
+              (activate): GELU()
+              (layers): Sequential(
+                (0): Conv2d(320, 1280, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(1280, 1280, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1280)
+                (2): GELU()
+                (3): Dropout(p=0.0, inplace=False)
+                (4): Conv2d(1280, 320, kernel_size=(1, 1), stride=(1, 1))
+                (5): Dropout(p=0.0, inplace=False)
+              )
+              (dropout_layer): DropPath()
+            )
+          )
+        )
+        (2): LayerNorm((320,), eps=1e-06, elementwise_affine=True)
+      )
+      (3): ModuleList(
+        (0): PatchEmbed(
+          (projection): Conv2d(320, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+          (norm): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+        )
+        (1): ModuleList(
+          (0): TransformerEncoderLayer(
+            (norm1): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+            (attn): EfficientMultiheadAttention(
+              (attn): MultiheadAttention(
+                (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)
+              )
+              (proj_drop): Dropout(p=0.0, inplace=False)
+              (dropout_layer): DropPath()
+            )
+            (norm2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+            (ffn): MixFFN(
+              (activate): GELU()
+              (layers): Sequential(
+                (0): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(2048, 2048, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=2048)
+                (2): GELU()
+                (3): Dropout(p=0.0, inplace=False)
+                (4): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1))
+                (5): Dropout(p=0.0, inplace=False)
+              )
+              (dropout_layer): DropPath()
+            )
+          )
+          (1): TransformerEncoderLayer(
+            (norm1): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+            (attn): EfficientMultiheadAttention(
+              (attn): MultiheadAttention(
+                (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)
+              )
+              (proj_drop): Dropout(p=0.0, inplace=False)
+              (dropout_layer): DropPath()
+            )
+            (norm2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+            (ffn): MixFFN(
+              (activate): GELU()
+              (layers): Sequential(
+                (0): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(2048, 2048, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=2048)
+                (2): GELU()
+                (3): Dropout(p=0.0, inplace=False)
+                (4): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1))
+                (5): Dropout(p=0.0, inplace=False)
+              )
+              (dropout_layer): DropPath()
+            )
+          )
+        )
+        (2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      )
+    )
+  )
+  init_cfg={'type': 'Pretrained', 'checkpoint': 'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/segformer/mit_b0_20220624-7e0fe6dd.pth'}
+  (decode_head): SegformerHead(
+    input_transform=multiple_select, ignore_index=255, align_corners=False
+    (loss_decode): CrossEntropyLoss(avg_non_ignore=False)
+    (conv_seg): Conv2d(256, 8, kernel_size=(1, 1), stride=(1, 1))
+    (dropout): Dropout2d(p=0.1, inplace=False)
+    (convs): ModuleList(
+      (0): ConvModule(
+        (conv): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+      (1): ConvModule(
+        (conv): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+      (2): ConvModule(
+        (conv): Conv2d(320, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+      (3): ConvModule(
+        (conv): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (activate): ReLU(inplace=True)
+      )
+    )
+    (fusion_conv): ConvModule(
+      (conv): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn): _BatchNormXd(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activate): ReLU(inplace=True)
+    )
+  )
+  init_cfg={'type': 'Normal', 'std': 0.01, 'override': {'name': 'conv_seg'}}
+)
+2023-02-12 23:07:13,891 - mmseg - INFO - Loaded 360 images
+2023-02-12 23:07:18,989 - mmseg - INFO - Loaded 40 images
+2023-02-12 23:07:18,990 - mmseg - INFO - Start running, host: root@autodl-container-9e2911833c-9adc88f1, work_dir: /root/autodl-tmp/mmsegmentation/work/segformer
+2023-02-12 23:07:18,990 - mmseg - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(NORMAL      ) CheckpointHook                     
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) PolyLrUpdaterHook                  
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+ -------------------- 
+after_train_iter:
+(ABOVE_NORMAL) OptimizerHook                      
+(NORMAL      ) CheckpointHook                     
+(LOW         ) IterTimerHook                      
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) CheckpointHook                     
+(LOW         ) EvalHook                           
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_val_epoch:
+(LOW         ) IterTimerHook                      
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_epoch:
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+after_run:
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+2023-02-12 23:07:18,990 - mmseg - INFO - workflow: [('train', 1)], max: 40000 iters
+2023-02-12 23:07:18,990 - mmseg - INFO - Checkpoints will be saved to /root/autodl-tmp/mmsegmentation/work/segformer by HardDiskBackend.
+2023-02-12 23:07:34,012 - mmseg - INFO - Iter [200/40000]	lr: 7.920e-06, eta: 0:48:58, time: 0.074, data_time: 0.021, memory: 528, decode.loss_ce: 1.5703, decode.acc_seg: 47.8324, loss: 1.5703
+2023-02-12 23:07:48,165 - mmseg - INFO - Iter [400/40000]	lr: 1.580e-05, eta: 0:47:42, time: 0.071, data_time: 0.021, memory: 528, decode.loss_ce: 0.8310, decode.acc_seg: 76.1784, loss: 0.8310
+2023-02-12 23:08:01,770 - mmseg - INFO - Iter [600/40000]	lr: 2.360e-05, eta: 0:46:32, time: 0.068, data_time: 0.018, memory: 528, decode.loss_ce: 0.6939, decode.acc_seg: 76.2675, loss: 0.6939
+2023-02-12 23:08:16,781 - mmseg - INFO - Iter [800/40000]	lr: 3.132e-05, eta: 0:46:58, time: 0.075, data_time: 0.025, memory: 528, decode.loss_ce: 0.6419, decode.acc_seg: 77.9737, loss: 0.6419
+2023-02-12 23:08:30,959 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:08:30,959 - mmseg - INFO - Iter [1000/40000]	lr: 3.896e-05, eta: 0:46:36, time: 0.071, data_time: 0.022, memory: 528, decode.loss_ce: 0.5871, decode.acc_seg: 78.1223, loss: 0.5871
+2023-02-12 23:08:45,654 - mmseg - INFO - Iter [1200/40000]	lr: 4.652e-05, eta: 0:46:33, time: 0.073, data_time: 0.022, memory: 528, decode.loss_ce: 0.5628, decode.acc_seg: 79.0886, loss: 0.5628
+2023-02-12 23:08:59,613 - mmseg - INFO - Iter [1400/40000]	lr: 5.400e-05, eta: 0:46:07, time: 0.070, data_time: 0.020, memory: 528, decode.loss_ce: 0.5573, decode.acc_seg: 79.8622, loss: 0.5573
+2023-02-12 23:09:12,662 - mmseg - INFO - Iter [1600/40000]	lr: 5.760e-05, eta: 0:45:21, time: 0.065, data_time: 0.017, memory: 528, decode.loss_ce: 0.5372, decode.acc_seg: 79.8450, loss: 0.5372
+2023-02-12 23:09:26,861 - mmseg - INFO - Iter [1800/40000]	lr: 5.730e-05, eta: 0:45:08, time: 0.071, data_time: 0.020, memory: 528, decode.loss_ce: 0.5178, decode.acc_seg: 80.5971, loss: 0.5178
+2023-02-12 23:09:43,426 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:09:43,426 - mmseg - INFO - Iter [2000/40000]	lr: 5.700e-05, eta: 0:45:39, time: 0.083, data_time: 0.033, memory: 528, decode.loss_ce: 0.4784, decode.acc_seg: 81.2128, loss: 0.4784
+2023-02-12 23:09:57,107 - mmseg - INFO - Iter [2200/40000]	lr: 5.670e-05, eta: 0:45:12, time: 0.068, data_time: 0.019, memory: 528, decode.loss_ce: 0.4785, decode.acc_seg: 81.3777, loss: 0.4785
+2023-02-12 23:10:10,307 - mmseg - INFO - Iter [2400/40000]	lr: 5.640e-05, eta: 0:44:39, time: 0.066, data_time: 0.016, memory: 528, decode.loss_ce: 0.4628, decode.acc_seg: 82.2825, loss: 0.4628
+2023-02-12 23:10:24,428 - mmseg - INFO - Iter [2600/40000]	lr: 5.610e-05, eta: 0:44:23, time: 0.071, data_time: 0.021, memory: 528, decode.loss_ce: 0.4692, decode.acc_seg: 80.7532, loss: 0.4692
+2023-02-12 23:10:39,027 - mmseg - INFO - Iter [2800/40000]	lr: 5.580e-05, eta: 0:44:14, time: 0.073, data_time: 0.022, memory: 528, decode.loss_ce: 0.4472, decode.acc_seg: 83.0931, loss: 0.4472
+2023-02-12 23:10:52,951 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:10:52,951 - mmseg - INFO - Iter [3000/40000]	lr: 5.550e-05, eta: 0:43:55, time: 0.070, data_time: 0.019, memory: 528, decode.loss_ce: 0.4203, decode.acc_seg: 82.5427, loss: 0.4203
+2023-02-12 23:11:06,762 - mmseg - INFO - Iter [3200/40000]	lr: 5.520e-05, eta: 0:43:36, time: 0.069, data_time: 0.018, memory: 528, decode.loss_ce: 0.4217, decode.acc_seg: 83.3565, loss: 0.4217
+2023-02-12 23:11:19,838 - mmseg - INFO - Iter [3400/40000]	lr: 5.490e-05, eta: 0:43:09, time: 0.065, data_time: 0.015, memory: 528, decode.loss_ce: 0.4388, decode.acc_seg: 82.6908, loss: 0.4388
+2023-02-12 23:11:34,178 - mmseg - INFO - Iter [3600/40000]	lr: 5.460e-05, eta: 0:42:57, time: 0.072, data_time: 0.021, memory: 528, decode.loss_ce: 0.4068, decode.acc_seg: 84.0062, loss: 0.4068
+2023-02-12 23:11:49,309 - mmseg - INFO - Iter [3800/40000]	lr: 5.430e-05, eta: 0:42:52, time: 0.076, data_time: 0.026, memory: 528, decode.loss_ce: 0.4126, decode.acc_seg: 83.2694, loss: 0.4126
+2023-02-12 23:12:04,062 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:12:04,062 - mmseg - INFO - Iter [4000/40000]	lr: 5.400e-05, eta: 0:42:43, time: 0.074, data_time: 0.023, memory: 528, decode.loss_ce: 0.3771, decode.acc_seg: 84.8555, loss: 0.3771
+2023-02-12 23:12:18,899 - mmseg - INFO - Iter [4200/40000]	lr: 5.370e-05, eta: 0:42:33, time: 0.074, data_time: 0.022, memory: 528, decode.loss_ce: 0.3810, decode.acc_seg: 84.0287, loss: 0.3810
+2023-02-12 23:12:33,147 - mmseg - INFO - Iter [4400/40000]	lr: 5.340e-05, eta: 0:42:19, time: 0.071, data_time: 0.021, memory: 528, decode.loss_ce: 0.3996, decode.acc_seg: 84.1099, loss: 0.3996
+2023-02-12 23:12:48,057 - mmseg - INFO - Iter [4600/40000]	lr: 5.310e-05, eta: 0:42:10, time: 0.075, data_time: 0.024, memory: 528, decode.loss_ce: 0.3801, decode.acc_seg: 84.4004, loss: 0.3801
+2023-02-12 23:13:01,126 - mmseg - INFO - Iter [4800/40000]	lr: 5.280e-05, eta: 0:41:46, time: 0.065, data_time: 0.016, memory: 528, decode.loss_ce: 0.3624, decode.acc_seg: 85.2779, loss: 0.3624
+2023-02-12 23:13:15,177 - mmseg - INFO - Saving checkpoint at 5000 iterations
+2023-02-12 23:13:15,562 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:13:15,562 - mmseg - INFO - Iter [5000/40000]	lr: 5.250e-05, eta: 0:41:34, time: 0.072, data_time: 0.021, memory: 528, decode.loss_ce: 0.3653, decode.acc_seg: 85.1834, loss: 0.3653
+2023-02-12 23:13:17,154 - mmseg - INFO - per class results:
+2023-02-12 23:13:17,155 - mmseg - INFO - 
++-----------+-------+-------+
+|   Class   |  IoU  |  Acc  |
++-----------+-------+-------+
+| obstacles | 17.01 | 18.91 |
+|   water   | 66.37 | 86.64 |
+|   nature  | 76.54 | 93.82 |
+|   moving  | 25.97 | 33.36 |
+|  landable | 78.87 | 89.28 |
++-----------+-------+-------+
+2023-02-12 23:13:17,155 - mmseg - INFO - Summary:
+2023-02-12 23:13:17,155 - mmseg - INFO - 
++-------+-------+------+
+|  aAcc |  mIoU | mAcc |
++-------+-------+------+
+| 83.38 | 52.95 | 64.4 |
++-------+-------+------+
+2023-02-12 23:13:17,156 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:13:17,156 - mmseg - INFO - Iter(val) [40]	aAcc: 0.8338, mIoU: 0.5295, mAcc: 0.6440, IoU.obstacles: 0.1701, IoU.water: 0.6637, IoU.nature: 0.7654, IoU.moving: 0.2597, IoU.landable: 0.7887, Acc.obstacles: 0.1891, Acc.water: 0.8664, Acc.nature: 0.9382, Acc.moving: 0.3336, Acc.landable: 0.8928
+2023-02-12 23:13:31,758 - mmseg - INFO - Iter [5200/40000]	lr: 5.220e-05, eta: 0:41:32, time: 0.081, data_time: 0.031, memory: 3636, decode.loss_ce: 0.3310, decode.acc_seg: 86.3459, loss: 0.3310
+2023-02-12 23:13:46,448 - mmseg - INFO - Iter [5400/40000]	lr: 5.190e-05, eta: 0:41:20, time: 0.073, data_time: 0.023, memory: 3636, decode.loss_ce: 0.3560, decode.acc_seg: 85.4514, loss: 0.3560
+2023-02-12 23:14:02,881 - mmseg - INFO - Iter [5600/40000]	lr: 5.160e-05, eta: 0:41:19, time: 0.082, data_time: 0.032, memory: 3636, decode.loss_ce: 0.3292, decode.acc_seg: 86.3836, loss: 0.3292
+2023-02-12 23:14:16,722 - mmseg - INFO - Iter [5800/40000]	lr: 5.130e-05, eta: 0:41:01, time: 0.069, data_time: 0.020, memory: 3636, decode.loss_ce: 0.3666, decode.acc_seg: 85.2671, loss: 0.3666
+2023-02-12 23:14:30,120 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:14:30,120 - mmseg - INFO - Iter [6000/40000]	lr: 5.100e-05, eta: 0:40:41, time: 0.067, data_time: 0.017, memory: 3636, decode.loss_ce: 0.3446, decode.acc_seg: 85.6313, loss: 0.3446
+2023-02-12 23:14:45,030 - mmseg - INFO - Iter [6200/40000]	lr: 5.070e-05, eta: 0:40:30, time: 0.075, data_time: 0.025, memory: 3636, decode.loss_ce: 0.3354, decode.acc_seg: 86.4207, loss: 0.3354
+2023-02-12 23:14:59,516 - mmseg - INFO - Iter [6400/40000]	lr: 5.040e-05, eta: 0:40:16, time: 0.072, data_time: 0.021, memory: 3636, decode.loss_ce: 0.3465, decode.acc_seg: 85.7496, loss: 0.3465
+2023-02-12 23:15:13,579 - mmseg - INFO - Iter [6600/40000]	lr: 5.010e-05, eta: 0:40:00, time: 0.070, data_time: 0.019, memory: 3636, decode.loss_ce: 0.3312, decode.acc_seg: 86.6478, loss: 0.3312
+2023-02-12 23:15:27,398 - mmseg - INFO - Iter [6800/40000]	lr: 4.980e-05, eta: 0:39:43, time: 0.069, data_time: 0.019, memory: 3636, decode.loss_ce: 0.3691, decode.acc_seg: 84.9153, loss: 0.3691
+2023-02-12 23:15:41,341 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:15:41,342 - mmseg - INFO - Iter [7000/40000]	lr: 4.950e-05, eta: 0:39:26, time: 0.070, data_time: 0.020, memory: 3636, decode.loss_ce: 0.3416, decode.acc_seg: 86.4877, loss: 0.3416
+2023-02-12 23:15:55,529 - mmseg - INFO - Iter [7200/40000]	lr: 4.920e-05, eta: 0:39:11, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.3924, decode.acc_seg: 84.3037, loss: 0.3924
+2023-02-12 23:16:11,635 - mmseg - INFO - Iter [7400/40000]	lr: 4.890e-05, eta: 0:39:05, time: 0.081, data_time: 0.031, memory: 3636, decode.loss_ce: 0.3318, decode.acc_seg: 86.4341, loss: 0.3318
+2023-02-12 23:16:25,755 - mmseg - INFO - Iter [7600/40000]	lr: 4.860e-05, eta: 0:38:49, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.3097, decode.acc_seg: 87.1984, loss: 0.3097
+2023-02-12 23:16:39,210 - mmseg - INFO - Iter [7800/40000]	lr: 4.830e-05, eta: 0:38:31, time: 0.067, data_time: 0.017, memory: 3636, decode.loss_ce: 0.3058, decode.acc_seg: 87.4725, loss: 0.3058
+2023-02-12 23:16:54,149 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:16:54,150 - mmseg - INFO - Iter [8000/40000]	lr: 4.800e-05, eta: 0:38:19, time: 0.075, data_time: 0.023, memory: 3636, decode.loss_ce: 0.3156, decode.acc_seg: 86.5053, loss: 0.3156
+2023-02-12 23:17:07,820 - mmseg - INFO - Iter [8200/40000]	lr: 4.770e-05, eta: 0:38:02, time: 0.068, data_time: 0.018, memory: 3636, decode.loss_ce: 0.2918, decode.acc_seg: 87.8093, loss: 0.2918
+2023-02-12 23:17:22,504 - mmseg - INFO - Iter [8400/40000]	lr: 4.740e-05, eta: 0:37:49, time: 0.073, data_time: 0.025, memory: 3636, decode.loss_ce: 0.3039, decode.acc_seg: 87.3882, loss: 0.3039
+2023-02-12 23:17:37,335 - mmseg - INFO - Iter [8600/40000]	lr: 4.710e-05, eta: 0:37:36, time: 0.074, data_time: 0.023, memory: 3636, decode.loss_ce: 0.2988, decode.acc_seg: 87.7708, loss: 0.2988
+2023-02-12 23:17:51,653 - mmseg - INFO - Iter [8800/40000]	lr: 4.680e-05, eta: 0:37:21, time: 0.072, data_time: 0.020, memory: 3636, decode.loss_ce: 0.3246, decode.acc_seg: 87.4289, loss: 0.3246
+2023-02-12 23:18:05,457 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:18:05,457 - mmseg - INFO - Iter [9000/40000]	lr: 4.650e-05, eta: 0:37:05, time: 0.069, data_time: 0.020, memory: 3636, decode.loss_ce: 0.2877, decode.acc_seg: 87.8366, loss: 0.2877
+2023-02-12 23:18:21,517 - mmseg - INFO - Iter [9200/40000]	lr: 4.620e-05, eta: 0:36:56, time: 0.080, data_time: 0.030, memory: 3636, decode.loss_ce: 0.2825, decode.acc_seg: 88.2265, loss: 0.2825
+2023-02-12 23:18:35,361 - mmseg - INFO - Iter [9400/40000]	lr: 4.590e-05, eta: 0:36:40, time: 0.069, data_time: 0.019, memory: 3636, decode.loss_ce: 0.3263, decode.acc_seg: 86.4479, loss: 0.3263
+2023-02-12 23:18:51,904 - mmseg - INFO - Iter [9600/40000]	lr: 4.560e-05, eta: 0:36:33, time: 0.083, data_time: 0.026, memory: 3636, decode.loss_ce: 0.3293, decode.acc_seg: 87.0191, loss: 0.3293
+2023-02-12 23:19:06,040 - mmseg - INFO - Iter [9800/40000]	lr: 4.530e-05, eta: 0:36:17, time: 0.071, data_time: 0.018, memory: 3636, decode.loss_ce: 0.3064, decode.acc_seg: 87.4088, loss: 0.3064
+2023-02-12 23:19:20,532 - mmseg - INFO - Saving checkpoint at 10000 iterations
+2023-02-12 23:19:20,915 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:19:20,915 - mmseg - INFO - Iter [10000/40000]	lr: 4.500e-05, eta: 0:36:04, time: 0.074, data_time: 0.023, memory: 3636, decode.loss_ce: 0.2980, decode.acc_seg: 87.7950, loss: 0.2980
+2023-02-12 23:19:22,246 - mmseg - INFO - per class results:
+2023-02-12 23:19:22,247 - mmseg - INFO - 
++-----------+-------+-------+
+|   Class   |  IoU  |  Acc  |
++-----------+-------+-------+
+| obstacles | 31.77 | 40.86 |
+|   water   | 60.71 | 77.94 |
+|   nature  | 78.14 | 90.75 |
+|   moving  | 29.88 | 36.32 |
+|  landable | 79.97 | 89.72 |
++-----------+-------+-------+
+2023-02-12 23:19:22,247 - mmseg - INFO - Summary:
+2023-02-12 23:19:22,247 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 84.52 | 56.09 | 67.12 |
++-------+-------+-------+
+2023-02-12 23:19:22,247 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:19:22,248 - mmseg - INFO - Iter(val) [40]	aAcc: 0.8452, mIoU: 0.5609, mAcc: 0.6712, IoU.obstacles: 0.3177, IoU.water: 0.6071, IoU.nature: 0.7814, IoU.moving: 0.2988, IoU.landable: 0.7997, Acc.obstacles: 0.4086, Acc.water: 0.7794, Acc.nature: 0.9075, Acc.moving: 0.3632, Acc.landable: 0.8972
+2023-02-12 23:19:36,779 - mmseg - INFO - Iter [10200/40000]	lr: 4.470e-05, eta: 0:35:54, time: 0.079, data_time: 0.030, memory: 3636, decode.loss_ce: 0.2696, decode.acc_seg: 88.9447, loss: 0.2696
+2023-02-12 23:19:50,814 - mmseg - INFO - Iter [10400/40000]	lr: 4.440e-05, eta: 0:35:38, time: 0.070, data_time: 0.020, memory: 3636, decode.loss_ce: 0.2992, decode.acc_seg: 88.1969, loss: 0.2992
+2023-02-12 23:20:05,261 - mmseg - INFO - Iter [10600/40000]	lr: 4.410e-05, eta: 0:35:24, time: 0.072, data_time: 0.022, memory: 3636, decode.loss_ce: 0.3285, decode.acc_seg: 87.3354, loss: 0.3285
+2023-02-12 23:20:18,454 - mmseg - INFO - Iter [10800/40000]	lr: 4.380e-05, eta: 0:35:06, time: 0.066, data_time: 0.017, memory: 3636, decode.loss_ce: 0.2960, decode.acc_seg: 88.2530, loss: 0.2960
+2023-02-12 23:20:35,048 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:20:35,048 - mmseg - INFO - Iter [11000/40000]	lr: 4.350e-05, eta: 0:34:57, time: 0.083, data_time: 0.032, memory: 3636, decode.loss_ce: 0.3034, decode.acc_seg: 88.0368, loss: 0.3034
+2023-02-12 23:20:48,235 - mmseg - INFO - Iter [11200/40000]	lr: 4.320e-05, eta: 0:34:40, time: 0.066, data_time: 0.016, memory: 3636, decode.loss_ce: 0.2706, decode.acc_seg: 88.7167, loss: 0.2706
+2023-02-12 23:21:03,213 - mmseg - INFO - Iter [11400/40000]	lr: 4.290e-05, eta: 0:34:26, time: 0.075, data_time: 0.024, memory: 3636, decode.loss_ce: 0.2774, decode.acc_seg: 88.4866, loss: 0.2774
+2023-02-12 23:21:17,442 - mmseg - INFO - Iter [11600/40000]	lr: 4.260e-05, eta: 0:34:11, time: 0.071, data_time: 0.020, memory: 3636, decode.loss_ce: 0.2726, decode.acc_seg: 88.7657, loss: 0.2726
+2023-02-12 23:21:31,798 - mmseg - INFO - Iter [11800/40000]	lr: 4.230e-05, eta: 0:33:57, time: 0.072, data_time: 0.021, memory: 3636, decode.loss_ce: 0.2833, decode.acc_seg: 88.6702, loss: 0.2833
+2023-02-12 23:21:45,376 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:21:45,376 - mmseg - INFO - Iter [12000/40000]	lr: 4.200e-05, eta: 0:33:40, time: 0.068, data_time: 0.018, memory: 3636, decode.loss_ce: 0.2750, decode.acc_seg: 88.5338, loss: 0.2750
+2023-02-12 23:21:59,162 - mmseg - INFO - Iter [12200/40000]	lr: 4.170e-05, eta: 0:33:24, time: 0.069, data_time: 0.020, memory: 3636, decode.loss_ce: 0.2651, decode.acc_seg: 88.7252, loss: 0.2651
+2023-02-12 23:22:13,582 - mmseg - INFO - Iter [12400/40000]	lr: 4.140e-05, eta: 0:33:10, time: 0.072, data_time: 0.022, memory: 3636, decode.loss_ce: 0.2769, decode.acc_seg: 88.7249, loss: 0.2769
+2023-02-12 23:22:27,568 - mmseg - INFO - Iter [12600/40000]	lr: 4.110e-05, eta: 0:32:55, time: 0.070, data_time: 0.020, memory: 3636, decode.loss_ce: 0.2756, decode.acc_seg: 88.6925, loss: 0.2756
+2023-02-12 23:22:42,982 - mmseg - INFO - Iter [12800/40000]	lr: 4.080e-05, eta: 0:32:42, time: 0.077, data_time: 0.027, memory: 3636, decode.loss_ce: 0.2537, decode.acc_seg: 89.3458, loss: 0.2537
+2023-02-12 23:22:56,912 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:22:56,912 - mmseg - INFO - Iter [13000/40000]	lr: 4.050e-05, eta: 0:32:27, time: 0.070, data_time: 0.018, memory: 3636, decode.loss_ce: 0.2481, decode.acc_seg: 89.7979, loss: 0.2481
+2023-02-12 23:23:10,834 - mmseg - INFO - Iter [13200/40000]	lr: 4.020e-05, eta: 0:32:11, time: 0.070, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2345, decode.acc_seg: 90.0335, loss: 0.2345
+2023-02-12 23:23:25,835 - mmseg - INFO - Iter [13400/40000]	lr: 3.990e-05, eta: 0:31:58, time: 0.075, data_time: 0.025, memory: 3636, decode.loss_ce: 0.2511, decode.acc_seg: 89.6534, loss: 0.2511
+2023-02-12 23:23:39,567 - mmseg - INFO - Iter [13600/40000]	lr: 3.960e-05, eta: 0:31:42, time: 0.069, data_time: 0.017, memory: 3636, decode.loss_ce: 0.2539, decode.acc_seg: 89.5418, loss: 0.2539
+2023-02-12 23:23:54,166 - mmseg - INFO - Iter [13800/40000]	lr: 3.930e-05, eta: 0:31:28, time: 0.073, data_time: 0.022, memory: 3636, decode.loss_ce: 0.2771, decode.acc_seg: 88.2338, loss: 0.2771
+2023-02-12 23:24:07,378 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:24:07,378 - mmseg - INFO - Iter [14000/40000]	lr: 3.900e-05, eta: 0:31:12, time: 0.066, data_time: 0.017, memory: 3636, decode.loss_ce: 0.2777, decode.acc_seg: 88.8220, loss: 0.2777
+2023-02-12 23:24:21,289 - mmseg - INFO - Iter [14200/40000]	lr: 3.870e-05, eta: 0:30:56, time: 0.070, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2519, decode.acc_seg: 89.4958, loss: 0.2519
+2023-02-12 23:24:36,058 - mmseg - INFO - Iter [14400/40000]	lr: 3.840e-05, eta: 0:30:43, time: 0.074, data_time: 0.024, memory: 3636, decode.loss_ce: 0.2333, decode.acc_seg: 90.2392, loss: 0.2333
+2023-02-12 23:24:51,647 - mmseg - INFO - Iter [14600/40000]	lr: 3.810e-05, eta: 0:30:30, time: 0.078, data_time: 0.028, memory: 3636, decode.loss_ce: 0.2498, decode.acc_seg: 89.5902, loss: 0.2498
+2023-02-12 23:25:05,876 - mmseg - INFO - Iter [14800/40000]	lr: 3.780e-05, eta: 0:30:16, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.2523, decode.acc_seg: 89.6184, loss: 0.2523
+2023-02-12 23:25:19,615 - mmseg - INFO - Saving checkpoint at 15000 iterations
+2023-02-12 23:25:20,026 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:25:20,026 - mmseg - INFO - Iter [15000/40000]	lr: 3.750e-05, eta: 0:30:01, time: 0.071, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2409, decode.acc_seg: 89.7973, loss: 0.2409
+2023-02-12 23:25:21,074 - mmseg - INFO - per class results:
+2023-02-12 23:25:21,074 - mmseg - INFO - 
++-----------+-------+-------+
+|   Class   |  IoU  |  Acc  |
++-----------+-------+-------+
+| obstacles |  37.1 | 44.16 |
+|   water   | 71.58 | 82.31 |
+|   nature  | 85.71 | 93.34 |
+|   moving  | 33.59 |  39.0 |
+|  landable | 85.83 | 95.21 |
++-----------+-------+-------+
+2023-02-12 23:25:21,074 - mmseg - INFO - Summary:
+2023-02-12 23:25:21,074 - mmseg - INFO - 
++-------+-------+------+
+|  aAcc |  mIoU | mAcc |
++-------+-------+------+
+| 88.81 | 62.76 | 70.8 |
++-------+-------+------+
+2023-02-12 23:25:21,075 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:25:21,075 - mmseg - INFO - Iter(val) [40]	aAcc: 0.8881, mIoU: 0.6276, mAcc: 0.7080, IoU.obstacles: 0.3710, IoU.water: 0.7158, IoU.nature: 0.8571, IoU.moving: 0.3359, IoU.landable: 0.8583, Acc.obstacles: 0.4416, Acc.water: 0.8231, Acc.nature: 0.9334, Acc.moving: 0.3900, Acc.landable: 0.9521
+2023-02-12 23:25:36,423 - mmseg - INFO - Iter [15200/40000]	lr: 3.720e-05, eta: 0:29:49, time: 0.082, data_time: 0.032, memory: 3636, decode.loss_ce: 0.2388, decode.acc_seg: 90.2390, loss: 0.2388
+2023-02-12 23:25:50,264 - mmseg - INFO - Iter [15400/40000]	lr: 3.690e-05, eta: 0:29:34, time: 0.069, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2249, decode.acc_seg: 90.4741, loss: 0.2249
+2023-02-12 23:26:04,710 - mmseg - INFO - Iter [15600/40000]	lr: 3.660e-05, eta: 0:29:20, time: 0.072, data_time: 0.022, memory: 3636, decode.loss_ce: 0.2593, decode.acc_seg: 89.4112, loss: 0.2593
+2023-02-12 23:26:18,394 - mmseg - INFO - Iter [15800/40000]	lr: 3.630e-05, eta: 0:29:04, time: 0.068, data_time: 0.018, memory: 3636, decode.loss_ce: 0.2254, decode.acc_seg: 90.7374, loss: 0.2254
+2023-02-12 23:26:32,005 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:26:32,005 - mmseg - INFO - Iter [16000/40000]	lr: 3.600e-05, eta: 0:28:48, time: 0.068, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2515, decode.acc_seg: 89.9152, loss: 0.2515
+2023-02-12 23:26:45,641 - mmseg - INFO - Iter [16200/40000]	lr: 3.570e-05, eta: 0:28:33, time: 0.068, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2252, decode.acc_seg: 90.3942, loss: 0.2252
+2023-02-12 23:27:02,899 - mmseg - INFO - Iter [16400/40000]	lr: 3.540e-05, eta: 0:28:23, time: 0.086, data_time: 0.035, memory: 3636, decode.loss_ce: 0.2159, decode.acc_seg: 90.7446, loss: 0.2159
+2023-02-12 23:27:17,836 - mmseg - INFO - Iter [16600/40000]	lr: 3.510e-05, eta: 0:28:09, time: 0.075, data_time: 0.022, memory: 3636, decode.loss_ce: 0.2481, decode.acc_seg: 89.5220, loss: 0.2481
+2023-02-12 23:27:32,930 - mmseg - INFO - Iter [16800/40000]	lr: 3.480e-05, eta: 0:27:55, time: 0.075, data_time: 0.025, memory: 3636, decode.loss_ce: 0.2128, decode.acc_seg: 90.9617, loss: 0.2128
+2023-02-12 23:27:46,383 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:27:46,383 - mmseg - INFO - Iter [17000/40000]	lr: 3.450e-05, eta: 0:27:40, time: 0.067, data_time: 0.017, memory: 3636, decode.loss_ce: 0.2753, decode.acc_seg: 88.9488, loss: 0.2753
+2023-02-12 23:28:00,469 - mmseg - INFO - Iter [17200/40000]	lr: 3.420e-05, eta: 0:27:25, time: 0.070, data_time: 0.020, memory: 3636, decode.loss_ce: 0.2213, decode.acc_seg: 90.6841, loss: 0.2213
+2023-02-12 23:28:16,322 - mmseg - INFO - Iter [17400/40000]	lr: 3.390e-05, eta: 0:27:12, time: 0.079, data_time: 0.028, memory: 3636, decode.loss_ce: 0.2167, decode.acc_seg: 90.8704, loss: 0.2167
+2023-02-12 23:28:30,906 - mmseg - INFO - Iter [17600/40000]	lr: 3.360e-05, eta: 0:26:58, time: 0.073, data_time: 0.024, memory: 3636, decode.loss_ce: 0.2640, decode.acc_seg: 89.1687, loss: 0.2640
+2023-02-12 23:28:45,043 - mmseg - INFO - Iter [17800/40000]	lr: 3.330e-05, eta: 0:26:43, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.2253, decode.acc_seg: 90.5561, loss: 0.2253
+2023-02-12 23:28:58,863 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:28:58,863 - mmseg - INFO - Iter [18000/40000]	lr: 3.300e-05, eta: 0:26:28, time: 0.069, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2154, decode.acc_seg: 91.0343, loss: 0.2154
+2023-02-12 23:29:15,657 - mmseg - INFO - Iter [18200/40000]	lr: 3.270e-05, eta: 0:26:16, time: 0.084, data_time: 0.033, memory: 3636, decode.loss_ce: 0.2152, decode.acc_seg: 90.9748, loss: 0.2152
+2023-02-12 23:29:30,012 - mmseg - INFO - Iter [18400/40000]	lr: 3.240e-05, eta: 0:26:02, time: 0.072, data_time: 0.023, memory: 3636, decode.loss_ce: 0.2314, decode.acc_seg: 90.3469, loss: 0.2314
+2023-02-12 23:29:43,699 - mmseg - INFO - Iter [18600/40000]	lr: 3.210e-05, eta: 0:25:46, time: 0.068, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2480, decode.acc_seg: 89.8572, loss: 0.2480
+2023-02-12 23:29:58,683 - mmseg - INFO - Iter [18800/40000]	lr: 3.180e-05, eta: 0:25:32, time: 0.075, data_time: 0.026, memory: 3636, decode.loss_ce: 0.2185, decode.acc_seg: 90.8870, loss: 0.2185
+2023-02-12 23:30:12,394 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:30:12,394 - mmseg - INFO - Iter [19000/40000]	lr: 3.150e-05, eta: 0:25:17, time: 0.069, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2212, decode.acc_seg: 90.7833, loss: 0.2212
+2023-02-12 23:30:27,607 - mmseg - INFO - Iter [19200/40000]	lr: 3.120e-05, eta: 0:25:03, time: 0.076, data_time: 0.024, memory: 3636, decode.loss_ce: 0.2020, decode.acc_seg: 91.4122, loss: 0.2020
+2023-02-12 23:30:41,785 - mmseg - INFO - Iter [19400/40000]	lr: 3.090e-05, eta: 0:24:49, time: 0.071, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2195, decode.acc_seg: 90.7342, loss: 0.2195
+2023-02-12 23:30:56,226 - mmseg - INFO - Iter [19600/40000]	lr: 3.060e-05, eta: 0:24:34, time: 0.072, data_time: 0.021, memory: 3636, decode.loss_ce: 0.2158, decode.acc_seg: 90.9842, loss: 0.2158
+2023-02-12 23:31:09,872 - mmseg - INFO - Iter [19800/40000]	lr: 3.030e-05, eta: 0:24:19, time: 0.068, data_time: 0.018, memory: 3636, decode.loss_ce: 0.2050, decode.acc_seg: 91.2395, loss: 0.2050
+2023-02-12 23:31:25,954 - mmseg - INFO - Saving checkpoint at 20000 iterations
+2023-02-12 23:31:26,343 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:31:26,343 - mmseg - INFO - Iter [20000/40000]	lr: 3.000e-05, eta: 0:24:06, time: 0.082, data_time: 0.030, memory: 3636, decode.loss_ce: 0.2044, decode.acc_seg: 91.2773, loss: 0.2044
+2023-02-12 23:31:27,666 - mmseg - INFO - per class results:
+2023-02-12 23:31:27,667 - mmseg - INFO - 
++-----------+-------+-------+
+|   Class   |  IoU  |  Acc  |
++-----------+-------+-------+
+| obstacles | 44.49 |  54.8 |
+|   water   | 79.77 | 95.09 |
+|   nature  | 80.63 | 93.86 |
+|   moving  | 34.66 | 43.43 |
+|  landable | 82.87 | 89.68 |
++-----------+-------+-------+
+2023-02-12 23:31:27,667 - mmseg - INFO - Summary:
+2023-02-12 23:31:27,667 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 87.28 | 64.48 | 75.37 |
++-------+-------+-------+
+2023-02-12 23:31:27,667 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:31:27,667 - mmseg - INFO - Iter(val) [40]	aAcc: 0.8728, mIoU: 0.6448, mAcc: 0.7537, IoU.obstacles: 0.4449, IoU.water: 0.7977, IoU.nature: 0.8063, IoU.moving: 0.3466, IoU.landable: 0.8287, Acc.obstacles: 0.5480, Acc.water: 0.9509, Acc.nature: 0.9386, Acc.moving: 0.4343, Acc.landable: 0.8968
+2023-02-12 23:31:42,114 - mmseg - INFO - Iter [20200/40000]	lr: 2.970e-05, eta: 0:23:53, time: 0.079, data_time: 0.028, memory: 3636, decode.loss_ce: 0.2024, decode.acc_seg: 91.5553, loss: 0.2024
+2023-02-12 23:31:55,859 - mmseg - INFO - Iter [20400/40000]	lr: 2.940e-05, eta: 0:23:38, time: 0.069, data_time: 0.017, memory: 3636, decode.loss_ce: 0.2145, decode.acc_seg: 90.9888, loss: 0.2145
+2023-02-12 23:32:09,824 - mmseg - INFO - Iter [20600/40000]	lr: 2.910e-05, eta: 0:23:23, time: 0.070, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2083, decode.acc_seg: 91.2683, loss: 0.2083
+2023-02-12 23:32:22,961 - mmseg - INFO - Iter [20800/40000]	lr: 2.880e-05, eta: 0:23:07, time: 0.066, data_time: 0.017, memory: 3636, decode.loss_ce: 0.2272, decode.acc_seg: 91.1250, loss: 0.2272
+2023-02-12 23:32:36,610 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:32:36,610 - mmseg - INFO - Iter [21000/40000]	lr: 2.850e-05, eta: 0:22:52, time: 0.068, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2213, decode.acc_seg: 90.6250, loss: 0.2213
+2023-02-12 23:32:50,061 - mmseg - INFO - Iter [21200/40000]	lr: 2.820e-05, eta: 0:22:37, time: 0.067, data_time: 0.016, memory: 3636, decode.loss_ce: 0.2099, decode.acc_seg: 91.3097, loss: 0.2099
+2023-02-12 23:33:04,578 - mmseg - INFO - Iter [21400/40000]	lr: 2.790e-05, eta: 0:22:23, time: 0.073, data_time: 0.022, memory: 3636, decode.loss_ce: 0.1955, decode.acc_seg: 91.7180, loss: 0.1955
+2023-02-12 23:33:19,058 - mmseg - INFO - Iter [21600/40000]	lr: 2.760e-05, eta: 0:22:08, time: 0.072, data_time: 0.022, memory: 3636, decode.loss_ce: 0.1962, decode.acc_seg: 91.6674, loss: 0.1962
+2023-02-12 23:33:34,792 - mmseg - INFO - Iter [21800/40000]	lr: 2.730e-05, eta: 0:21:55, time: 0.079, data_time: 0.028, memory: 3636, decode.loss_ce: 0.1929, decode.acc_seg: 91.5997, loss: 0.1929
+2023-02-12 23:33:48,476 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:33:48,476 - mmseg - INFO - Iter [22000/40000]	lr: 2.700e-05, eta: 0:21:40, time: 0.068, data_time: 0.019, memory: 3636, decode.loss_ce: 0.2025, decode.acc_seg: 91.6498, loss: 0.2025
+2023-02-12 23:34:01,920 - mmseg - INFO - Iter [22200/40000]	lr: 2.670e-05, eta: 0:21:24, time: 0.067, data_time: 0.018, memory: 3636, decode.loss_ce: 0.2035, decode.acc_seg: 91.3674, loss: 0.2035
+2023-02-12 23:34:16,202 - mmseg - INFO - Iter [22400/40000]	lr: 2.640e-05, eta: 0:21:10, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.2052, decode.acc_seg: 91.7688, loss: 0.2052
+2023-02-12 23:34:31,165 - mmseg - INFO - Iter [22600/40000]	lr: 2.610e-05, eta: 0:20:56, time: 0.075, data_time: 0.024, memory: 3636, decode.loss_ce: 0.2129, decode.acc_seg: 91.2755, loss: 0.2129
+2023-02-12 23:34:45,740 - mmseg - INFO - Iter [22800/40000]	lr: 2.580e-05, eta: 0:20:41, time: 0.073, data_time: 0.023, memory: 3636, decode.loss_ce: 0.1911, decode.acc_seg: 91.8860, loss: 0.1911
+2023-02-12 23:34:59,801 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:34:59,801 - mmseg - INFO - Iter [23000/40000]	lr: 2.550e-05, eta: 0:20:27, time: 0.070, data_time: 0.021, memory: 3636, decode.loss_ce: 0.1913, decode.acc_seg: 92.0216, loss: 0.1913
+2023-02-12 23:35:14,647 - mmseg - INFO - Iter [23200/40000]	lr: 2.520e-05, eta: 0:20:13, time: 0.074, data_time: 0.024, memory: 3636, decode.loss_ce: 0.2044, decode.acc_seg: 91.4701, loss: 0.2044
+2023-02-12 23:35:28,325 - mmseg - INFO - Iter [23400/40000]	lr: 2.490e-05, eta: 0:19:58, time: 0.068, data_time: 0.018, memory: 3636, decode.loss_ce: 0.2028, decode.acc_seg: 91.6938, loss: 0.2028
+2023-02-12 23:35:43,969 - mmseg - INFO - Iter [23600/40000]	lr: 2.460e-05, eta: 0:19:44, time: 0.078, data_time: 0.028, memory: 3636, decode.loss_ce: 0.2203, decode.acc_seg: 91.2226, loss: 0.2203
+2023-02-12 23:35:57,546 - mmseg - INFO - Iter [23800/40000]	lr: 2.430e-05, eta: 0:19:29, time: 0.068, data_time: 0.017, memory: 3636, decode.loss_ce: 0.2018, decode.acc_seg: 91.6468, loss: 0.2018
+2023-02-12 23:36:11,227 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:36:11,228 - mmseg - INFO - Iter [24000/40000]	lr: 2.400e-05, eta: 0:19:14, time: 0.068, data_time: 0.020, memory: 3636, decode.loss_ce: 0.1938, decode.acc_seg: 91.9506, loss: 0.1938
+2023-02-12 23:36:25,617 - mmseg - INFO - Iter [24200/40000]	lr: 2.370e-05, eta: 0:19:00, time: 0.072, data_time: 0.022, memory: 3636, decode.loss_ce: 0.2113, decode.acc_seg: 91.4907, loss: 0.2113
+2023-02-12 23:36:40,613 - mmseg - INFO - Iter [24400/40000]	lr: 2.340e-05, eta: 0:18:46, time: 0.075, data_time: 0.025, memory: 3636, decode.loss_ce: 0.1960, decode.acc_seg: 91.7626, loss: 0.1960
+2023-02-12 23:36:54,272 - mmseg - INFO - Iter [24600/40000]	lr: 2.310e-05, eta: 0:18:31, time: 0.068, data_time: 0.019, memory: 3636, decode.loss_ce: 0.1791, decode.acc_seg: 92.2305, loss: 0.1791
+2023-02-12 23:37:08,371 - mmseg - INFO - Iter [24800/40000]	lr: 2.280e-05, eta: 0:18:16, time: 0.070, data_time: 0.020, memory: 3636, decode.loss_ce: 0.1854, decode.acc_seg: 92.4957, loss: 0.1854
+2023-02-12 23:37:21,414 - mmseg - INFO - Saving checkpoint at 25000 iterations
+2023-02-12 23:37:21,802 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:37:21,802 - mmseg - INFO - Iter [25000/40000]	lr: 2.250e-05, eta: 0:18:01, time: 0.067, data_time: 0.015, memory: 3636, decode.loss_ce: 0.1807, decode.acc_seg: 92.1642, loss: 0.1807
+2023-02-12 23:37:23,113 - mmseg - INFO - per class results:
+2023-02-12 23:37:23,114 - mmseg - INFO - 
++-----------+-------+-------+
+|   Class   |  IoU  |  Acc  |
++-----------+-------+-------+
+| obstacles | 41.36 | 47.69 |
+|   water   | 83.79 | 94.94 |
+|   nature  | 87.42 | 94.68 |
+|   moving  | 40.45 | 54.56 |
+|  landable | 87.29 | 95.29 |
++-----------+-------+-------+
+2023-02-12 23:37:23,114 - mmseg - INFO - Summary:
+2023-02-12 23:37:23,114 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 90.11 | 68.06 | 77.43 |
++-------+-------+-------+
+2023-02-12 23:37:23,114 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:37:23,115 - mmseg - INFO - Iter(val) [40]	aAcc: 0.9011, mIoU: 0.6806, mAcc: 0.7743, IoU.obstacles: 0.4136, IoU.water: 0.8379, IoU.nature: 0.8742, IoU.moving: 0.4045, IoU.landable: 0.8729, Acc.obstacles: 0.4769, Acc.water: 0.9494, Acc.nature: 0.9468, Acc.moving: 0.5456, Acc.landable: 0.9529
+2023-02-12 23:37:38,067 - mmseg - INFO - Iter [25200/40000]	lr: 2.220e-05, eta: 0:17:48, time: 0.081, data_time: 0.032, memory: 3636, decode.loss_ce: 0.1797, decode.acc_seg: 92.2899, loss: 0.1797
+2023-02-12 23:37:53,776 - mmseg - INFO - Iter [25400/40000]	lr: 2.190e-05, eta: 0:17:34, time: 0.079, data_time: 0.030, memory: 3636, decode.loss_ce: 0.1974, decode.acc_seg: 91.7607, loss: 0.1974
+2023-02-12 23:38:07,919 - mmseg - INFO - Iter [25600/40000]	lr: 2.160e-05, eta: 0:17:19, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.2003, decode.acc_seg: 91.8536, loss: 0.2003
+2023-02-12 23:38:21,692 - mmseg - INFO - Iter [25800/40000]	lr: 2.130e-05, eta: 0:17:04, time: 0.069, data_time: 0.019, memory: 3636, decode.loss_ce: 0.1819, decode.acc_seg: 92.1815, loss: 0.1819
+2023-02-12 23:38:35,692 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:38:35,692 - mmseg - INFO - Iter [26000/40000]	lr: 2.100e-05, eta: 0:16:50, time: 0.070, data_time: 0.019, memory: 3636, decode.loss_ce: 0.1921, decode.acc_seg: 91.8540, loss: 0.1921
+2023-02-12 23:38:49,989 - mmseg - INFO - Iter [26200/40000]	lr: 2.070e-05, eta: 0:16:35, time: 0.071, data_time: 0.022, memory: 3636, decode.loss_ce: 0.1872, decode.acc_seg: 92.3546, loss: 0.1872
+2023-02-12 23:39:04,407 - mmseg - INFO - Iter [26400/40000]	lr: 2.040e-05, eta: 0:16:21, time: 0.072, data_time: 0.020, memory: 3636, decode.loss_ce: 0.1924, decode.acc_seg: 92.0406, loss: 0.1924
+2023-02-12 23:39:18,113 - mmseg - INFO - Iter [26600/40000]	lr: 2.010e-05, eta: 0:16:06, time: 0.069, data_time: 0.018, memory: 3636, decode.loss_ce: 0.1909, decode.acc_seg: 92.0201, loss: 0.1909
+2023-02-12 23:39:32,162 - mmseg - INFO - Iter [26800/40000]	lr: 1.980e-05, eta: 0:15:51, time: 0.070, data_time: 0.019, memory: 3636, decode.loss_ce: 0.1794, decode.acc_seg: 92.0899, loss: 0.1794
+2023-02-12 23:39:47,265 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:39:47,265 - mmseg - INFO - Iter [27000/40000]	lr: 1.950e-05, eta: 0:15:37, time: 0.076, data_time: 0.023, memory: 3636, decode.loss_ce: 0.1915, decode.acc_seg: 92.1137, loss: 0.1915
+2023-02-12 23:40:03,823 - mmseg - INFO - Iter [27200/40000]	lr: 1.920e-05, eta: 0:15:24, time: 0.083, data_time: 0.033, memory: 3636, decode.loss_ce: 0.1928, decode.acc_seg: 92.0481, loss: 0.1928
+2023-02-12 23:40:17,782 - mmseg - INFO - Iter [27400/40000]	lr: 1.890e-05, eta: 0:15:09, time: 0.070, data_time: 0.019, memory: 3636, decode.loss_ce: 0.1736, decode.acc_seg: 92.6711, loss: 0.1736
+2023-02-12 23:40:31,583 - mmseg - INFO - Iter [27600/40000]	lr: 1.860e-05, eta: 0:14:55, time: 0.069, data_time: 0.016, memory: 3636, decode.loss_ce: 0.1754, decode.acc_seg: 92.6285, loss: 0.1754
+2023-02-12 23:40:45,538 - mmseg - INFO - Iter [27800/40000]	lr: 1.830e-05, eta: 0:14:40, time: 0.070, data_time: 0.019, memory: 3636, decode.loss_ce: 0.1811, decode.acc_seg: 92.6190, loss: 0.1811
+2023-02-12 23:40:59,426 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:40:59,426 - mmseg - INFO - Iter [28000/40000]	lr: 1.800e-05, eta: 0:14:25, time: 0.069, data_time: 0.018, memory: 3636, decode.loss_ce: 0.1779, decode.acc_seg: 92.2961, loss: 0.1779
+2023-02-12 23:41:12,493 - mmseg - INFO - Iter [28200/40000]	lr: 1.770e-05, eta: 0:14:10, time: 0.065, data_time: 0.016, memory: 3636, decode.loss_ce: 0.1676, decode.acc_seg: 92.6708, loss: 0.1676
+2023-02-12 23:41:26,781 - mmseg - INFO - Iter [28400/40000]	lr: 1.740e-05, eta: 0:13:56, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.1669, decode.acc_seg: 92.8967, loss: 0.1669
+2023-02-12 23:41:40,382 - mmseg - INFO - Iter [28600/40000]	lr: 1.710e-05, eta: 0:13:41, time: 0.068, data_time: 0.017, memory: 3636, decode.loss_ce: 0.1805, decode.acc_seg: 92.6658, loss: 0.1805
+2023-02-12 23:41:55,059 - mmseg - INFO - Iter [28800/40000]	lr: 1.680e-05, eta: 0:13:27, time: 0.073, data_time: 0.023, memory: 3636, decode.loss_ce: 0.1770, decode.acc_seg: 92.6597, loss: 0.1770
+2023-02-12 23:42:11,962 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:42:11,962 - mmseg - INFO - Iter [29000/40000]	lr: 1.650e-05, eta: 0:13:13, time: 0.085, data_time: 0.033, memory: 3636, decode.loss_ce: 0.1725, decode.acc_seg: 92.5147, loss: 0.1725
+2023-02-12 23:42:26,328 - mmseg - INFO - Iter [29200/40000]	lr: 1.620e-05, eta: 0:12:59, time: 0.072, data_time: 0.021, memory: 3636, decode.loss_ce: 0.1781, decode.acc_seg: 92.5224, loss: 0.1781
+2023-02-12 23:42:40,339 - mmseg - INFO - Iter [29400/40000]	lr: 1.590e-05, eta: 0:12:44, time: 0.070, data_time: 0.018, memory: 3636, decode.loss_ce: 0.1724, decode.acc_seg: 92.9293, loss: 0.1724
+2023-02-12 23:42:54,208 - mmseg - INFO - Iter [29600/40000]	lr: 1.560e-05, eta: 0:12:30, time: 0.069, data_time: 0.020, memory: 3636, decode.loss_ce: 0.1756, decode.acc_seg: 92.5435, loss: 0.1756
+2023-02-12 23:43:07,618 - mmseg - INFO - Iter [29800/40000]	lr: 1.530e-05, eta: 0:12:15, time: 0.067, data_time: 0.017, memory: 3636, decode.loss_ce: 0.1818, decode.acc_seg: 92.5862, loss: 0.1818
+2023-02-12 23:43:22,257 - mmseg - INFO - Saving checkpoint at 30000 iterations
+2023-02-12 23:43:22,750 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:43:22,750 - mmseg - INFO - Iter [30000/40000]	lr: 1.500e-05, eta: 0:12:01, time: 0.076, data_time: 0.022, memory: 3636, decode.loss_ce: 0.1981, decode.acc_seg: 91.8871, loss: 0.1981
+2023-02-12 23:43:24,121 - mmseg - INFO - per class results:
+2023-02-12 23:43:24,122 - mmseg - INFO - 
++-----------+-------+-------+
+|   Class   |  IoU  |  Acc  |
++-----------+-------+-------+
+| obstacles | 48.57 | 60.32 |
+|   water   | 79.24 | 89.87 |
+|   nature  | 87.13 | 94.28 |
+|   moving  | 44.08 | 58.79 |
+|  landable | 87.84 |  94.1 |
++-----------+-------+-------+
+2023-02-12 23:43:24,122 - mmseg - INFO - Summary:
+2023-02-12 23:43:24,122 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 90.45 | 69.37 | 79.47 |
++-------+-------+-------+
+2023-02-12 23:43:24,122 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:43:24,122 - mmseg - INFO - Iter(val) [40]	aAcc: 0.9045, mIoU: 0.6937, mAcc: 0.7947, IoU.obstacles: 0.4857, IoU.water: 0.7924, IoU.nature: 0.8713, IoU.moving: 0.4408, IoU.landable: 0.8784, Acc.obstacles: 0.6032, Acc.water: 0.8987, Acc.nature: 0.9428, Acc.moving: 0.5879, Acc.landable: 0.9410
+2023-02-12 23:43:37,975 - mmseg - INFO - Iter [30200/40000]	lr: 1.470e-05, eta: 0:11:46, time: 0.076, data_time: 0.027, memory: 3636, decode.loss_ce: 0.1740, decode.acc_seg: 92.8736, loss: 0.1740
+2023-02-12 23:43:52,605 - mmseg - INFO - Iter [30400/40000]	lr: 1.440e-05, eta: 0:11:32, time: 0.073, data_time: 0.024, memory: 3636, decode.loss_ce: 0.1829, decode.acc_seg: 92.5647, loss: 0.1829
+2023-02-12 23:44:06,599 - mmseg - INFO - Iter [30600/40000]	lr: 1.410e-05, eta: 0:11:18, time: 0.070, data_time: 0.020, memory: 3636, decode.loss_ce: 0.1714, decode.acc_seg: 92.6128, loss: 0.1714
+2023-02-12 23:44:23,339 - mmseg - INFO - Iter [30800/40000]	lr: 1.380e-05, eta: 0:11:04, time: 0.084, data_time: 0.033, memory: 3636, decode.loss_ce: 0.1699, decode.acc_seg: 92.9420, loss: 0.1699
+2023-02-12 23:44:37,607 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:44:37,607 - mmseg - INFO - Iter [31000/40000]	lr: 1.350e-05, eta: 0:10:49, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.1608, decode.acc_seg: 93.2228, loss: 0.1608
+2023-02-12 23:44:52,248 - mmseg - INFO - Iter [31200/40000]	lr: 1.320e-05, eta: 0:10:35, time: 0.073, data_time: 0.023, memory: 3636, decode.loss_ce: 0.1785, decode.acc_seg: 92.4703, loss: 0.1785
+2023-02-12 23:45:05,983 - mmseg - INFO - Iter [31400/40000]	lr: 1.290e-05, eta: 0:10:20, time: 0.069, data_time: 0.019, memory: 3636, decode.loss_ce: 0.1600, decode.acc_seg: 93.1012, loss: 0.1600
+2023-02-12 23:45:21,854 - mmseg - INFO - Iter [31600/40000]	lr: 1.260e-05, eta: 0:10:06, time: 0.079, data_time: 0.029, memory: 3636, decode.loss_ce: 0.1777, decode.acc_seg: 92.5151, loss: 0.1777
+2023-02-12 23:45:36,817 - mmseg - INFO - Iter [31800/40000]	lr: 1.230e-05, eta: 0:09:52, time: 0.075, data_time: 0.024, memory: 3636, decode.loss_ce: 0.1652, decode.acc_seg: 93.0771, loss: 0.1652
+2023-02-12 23:45:51,077 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:45:51,077 - mmseg - INFO - Iter [32000/40000]	lr: 1.200e-05, eta: 0:09:37, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.1687, decode.acc_seg: 92.9205, loss: 0.1687
+2023-02-12 23:46:04,581 - mmseg - INFO - Iter [32200/40000]	lr: 1.170e-05, eta: 0:09:23, time: 0.068, data_time: 0.018, memory: 3636, decode.loss_ce: 0.1776, decode.acc_seg: 92.5392, loss: 0.1776
+2023-02-12 23:46:19,793 - mmseg - INFO - Iter [32400/40000]	lr: 1.140e-05, eta: 0:09:08, time: 0.076, data_time: 0.024, memory: 3636, decode.loss_ce: 0.1594, decode.acc_seg: 93.2916, loss: 0.1594
+2023-02-12 23:46:36,696 - mmseg - INFO - Iter [32600/40000]	lr: 1.110e-05, eta: 0:08:55, time: 0.085, data_time: 0.033, memory: 3636, decode.loss_ce: 0.1583, decode.acc_seg: 93.2801, loss: 0.1583
+2023-02-12 23:46:51,380 - mmseg - INFO - Iter [32800/40000]	lr: 1.080e-05, eta: 0:08:40, time: 0.073, data_time: 0.023, memory: 3636, decode.loss_ce: 0.1687, decode.acc_seg: 92.8539, loss: 0.1687
+2023-02-12 23:47:05,794 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:47:05,794 - mmseg - INFO - Iter [33000/40000]	lr: 1.050e-05, eta: 0:08:26, time: 0.072, data_time: 0.020, memory: 3636, decode.loss_ce: 0.1704, decode.acc_seg: 92.7292, loss: 0.1704
+2023-02-12 23:47:19,009 - mmseg - INFO - Iter [33200/40000]	lr: 1.020e-05, eta: 0:08:11, time: 0.066, data_time: 0.016, memory: 3636, decode.loss_ce: 0.1584, decode.acc_seg: 93.2443, loss: 0.1584
+2023-02-12 23:47:34,069 - mmseg - INFO - Iter [33400/40000]	lr: 9.901e-06, eta: 0:07:57, time: 0.075, data_time: 0.026, memory: 3636, decode.loss_ce: 0.1568, decode.acc_seg: 93.4126, loss: 0.1568
+2023-02-12 23:47:49,459 - mmseg - INFO - Iter [33600/40000]	lr: 9.601e-06, eta: 0:07:42, time: 0.077, data_time: 0.028, memory: 3636, decode.loss_ce: 0.1616, decode.acc_seg: 92.9127, loss: 0.1616
+2023-02-12 23:48:04,190 - mmseg - INFO - Iter [33800/40000]	lr: 9.301e-06, eta: 0:07:28, time: 0.074, data_time: 0.023, memory: 3636, decode.loss_ce: 0.1813, decode.acc_seg: 92.4713, loss: 0.1813
+2023-02-12 23:48:18,617 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:48:18,617 - mmseg - INFO - Iter [34000/40000]	lr: 9.001e-06, eta: 0:07:13, time: 0.072, data_time: 0.022, memory: 3636, decode.loss_ce: 0.1655, decode.acc_seg: 93.0676, loss: 0.1655
+2023-02-12 23:48:33,477 - mmseg - INFO - Iter [34200/40000]	lr: 8.701e-06, eta: 0:06:59, time: 0.074, data_time: 0.025, memory: 3636, decode.loss_ce: 0.1590, decode.acc_seg: 93.3706, loss: 0.1590
+2023-02-12 23:48:49,943 - mmseg - INFO - Iter [34400/40000]	lr: 8.401e-06, eta: 0:06:45, time: 0.082, data_time: 0.031, memory: 3636, decode.loss_ce: 0.1649, decode.acc_seg: 93.0455, loss: 0.1649
+2023-02-12 23:49:03,594 - mmseg - INFO - Iter [34600/40000]	lr: 8.101e-06, eta: 0:06:30, time: 0.068, data_time: 0.018, memory: 3636, decode.loss_ce: 0.1584, decode.acc_seg: 93.2978, loss: 0.1584
+2023-02-12 23:49:17,442 - mmseg - INFO - Iter [34800/40000]	lr: 7.801e-06, eta: 0:06:16, time: 0.069, data_time: 0.020, memory: 3636, decode.loss_ce: 0.1602, decode.acc_seg: 93.1614, loss: 0.1602
+2023-02-12 23:49:31,380 - mmseg - INFO - Saving checkpoint at 35000 iterations
+2023-02-12 23:49:31,749 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:49:31,749 - mmseg - INFO - Iter [35000/40000]	lr: 7.502e-06, eta: 0:06:01, time: 0.072, data_time: 0.019, memory: 3636, decode.loss_ce: 0.1528, decode.acc_seg: 93.2478, loss: 0.1528
+2023-02-12 23:49:33,068 - mmseg - INFO - per class results:
+2023-02-12 23:49:33,069 - mmseg - INFO - 
++-----------+-------+-------+
+|   Class   |  IoU  |  Acc  |
++-----------+-------+-------+
+| obstacles |  49.2 | 59.06 |
+|   water   | 84.17 | 94.49 |
+|   nature  | 87.67 | 95.29 |
+|   moving  | 47.88 | 61.54 |
+|  landable | 88.15 | 94.25 |
++-----------+-------+-------+
+2023-02-12 23:49:33,069 - mmseg - INFO - Summary:
+2023-02-12 23:49:33,069 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 90.88 | 71.41 | 80.93 |
++-------+-------+-------+
+2023-02-12 23:49:33,070 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:49:33,070 - mmseg - INFO - Iter(val) [40]	aAcc: 0.9088, mIoU: 0.7141, mAcc: 0.8093, IoU.obstacles: 0.4920, IoU.water: 0.8417, IoU.nature: 0.8767, IoU.moving: 0.4788, IoU.landable: 0.8815, Acc.obstacles: 0.5906, Acc.water: 0.9449, Acc.nature: 0.9529, Acc.moving: 0.6154, Acc.landable: 0.9425
+2023-02-12 23:49:47,670 - mmseg - INFO - Iter [35200/40000]	lr: 7.202e-06, eta: 0:05:47, time: 0.080, data_time: 0.029, memory: 3636, decode.loss_ce: 0.1589, decode.acc_seg: 93.2295, loss: 0.1589
+2023-02-12 23:50:01,514 - mmseg - INFO - Iter [35400/40000]	lr: 6.902e-06, eta: 0:05:32, time: 0.069, data_time: 0.020, memory: 3636, decode.loss_ce: 0.1701, decode.acc_seg: 92.9326, loss: 0.1701
+2023-02-12 23:50:16,130 - mmseg - INFO - Iter [35600/40000]	lr: 6.602e-06, eta: 0:05:18, time: 0.073, data_time: 0.023, memory: 3636, decode.loss_ce: 0.1596, decode.acc_seg: 93.1488, loss: 0.1596
+2023-02-12 23:50:29,847 - mmseg - INFO - Iter [35800/40000]	lr: 6.302e-06, eta: 0:05:03, time: 0.069, data_time: 0.017, memory: 3636, decode.loss_ce: 0.1581, decode.acc_seg: 93.3885, loss: 0.1581
+2023-02-12 23:50:44,004 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:50:44,004 - mmseg - INFO - Iter [36000/40000]	lr: 6.002e-06, eta: 0:04:49, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.1580, decode.acc_seg: 93.2825, loss: 0.1580
+2023-02-12 23:51:00,813 - mmseg - INFO - Iter [36200/40000]	lr: 5.702e-06, eta: 0:04:35, time: 0.084, data_time: 0.034, memory: 3636, decode.loss_ce: 0.1645, decode.acc_seg: 93.0104, loss: 0.1645
+2023-02-12 23:51:15,141 - mmseg - INFO - Iter [36400/40000]	lr: 5.402e-06, eta: 0:04:20, time: 0.072, data_time: 0.022, memory: 3636, decode.loss_ce: 0.1569, decode.acc_seg: 93.2574, loss: 0.1569
+2023-02-12 23:51:28,620 - mmseg - INFO - Iter [36600/40000]	lr: 5.102e-06, eta: 0:04:06, time: 0.067, data_time: 0.018, memory: 3636, decode.loss_ce: 0.1623, decode.acc_seg: 93.1608, loss: 0.1623
+2023-02-12 23:51:43,797 - mmseg - INFO - Iter [36800/40000]	lr: 4.802e-06, eta: 0:03:51, time: 0.076, data_time: 0.026, memory: 3636, decode.loss_ce: 0.1599, decode.acc_seg: 93.2201, loss: 0.1599
+2023-02-12 23:51:57,335 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:51:57,336 - mmseg - INFO - Iter [37000/40000]	lr: 4.502e-06, eta: 0:03:37, time: 0.068, data_time: 0.019, memory: 3636, decode.loss_ce: 0.1526, decode.acc_seg: 93.2947, loss: 0.1526
+2023-02-12 23:52:11,134 - mmseg - INFO - Iter [37200/40000]	lr: 4.202e-06, eta: 0:03:22, time: 0.069, data_time: 0.020, memory: 3636, decode.loss_ce: 0.1577, decode.acc_seg: 93.3766, loss: 0.1577
+2023-02-12 23:52:26,211 - mmseg - INFO - Iter [37400/40000]	lr: 3.901e-06, eta: 0:03:08, time: 0.075, data_time: 0.019, memory: 3636, decode.loss_ce: 0.1583, decode.acc_seg: 93.1823, loss: 0.1583
+2023-02-12 23:52:40,849 - mmseg - INFO - Iter [37600/40000]	lr: 3.601e-06, eta: 0:02:53, time: 0.073, data_time: 0.024, memory: 3636, decode.loss_ce: 0.1528, decode.acc_seg: 93.6185, loss: 0.1528
+2023-02-12 23:52:55,196 - mmseg - INFO - Iter [37800/40000]	lr: 3.301e-06, eta: 0:02:39, time: 0.072, data_time: 0.023, memory: 3636, decode.loss_ce: 0.1617, decode.acc_seg: 93.3263, loss: 0.1617
+2023-02-12 23:53:10,408 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:53:10,409 - mmseg - INFO - Iter [38000/40000]	lr: 3.001e-06, eta: 0:02:24, time: 0.076, data_time: 0.027, memory: 3636, decode.loss_ce: 0.1613, decode.acc_seg: 93.2896, loss: 0.1613
+2023-02-12 23:53:24,105 - mmseg - INFO - Iter [38200/40000]	lr: 2.701e-06, eta: 0:02:10, time: 0.068, data_time: 0.018, memory: 3636, decode.loss_ce: 0.1555, decode.acc_seg: 93.3889, loss: 0.1555
+2023-02-12 23:53:37,794 - mmseg - INFO - Iter [38400/40000]	lr: 2.401e-06, eta: 0:01:55, time: 0.068, data_time: 0.018, memory: 3636, decode.loss_ce: 0.1579, decode.acc_seg: 93.4165, loss: 0.1579
+2023-02-12 23:53:52,557 - mmseg - INFO - Iter [38600/40000]	lr: 2.101e-06, eta: 0:01:41, time: 0.074, data_time: 0.022, memory: 3636, decode.loss_ce: 0.1612, decode.acc_seg: 93.1208, loss: 0.1612
+2023-02-12 23:54:06,862 - mmseg - INFO - Iter [38800/40000]	lr: 1.801e-06, eta: 0:01:26, time: 0.072, data_time: 0.020, memory: 3636, decode.loss_ce: 0.1556, decode.acc_seg: 93.5228, loss: 0.1556
+2023-02-12 23:54:21,580 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:54:21,581 - mmseg - INFO - Iter [39000/40000]	lr: 1.501e-06, eta: 0:01:12, time: 0.074, data_time: 0.024, memory: 3636, decode.loss_ce: 0.1515, decode.acc_seg: 93.3664, loss: 0.1515
+2023-02-12 23:54:35,698 - mmseg - INFO - Iter [39200/40000]	lr: 1.201e-06, eta: 0:00:57, time: 0.071, data_time: 0.021, memory: 3636, decode.loss_ce: 0.1482, decode.acc_seg: 93.6320, loss: 0.1482
+2023-02-12 23:54:48,766 - mmseg - INFO - Iter [39400/40000]	lr: 9.015e-07, eta: 0:00:43, time: 0.065, data_time: 0.016, memory: 3636, decode.loss_ce: 0.1551, decode.acc_seg: 93.4912, loss: 0.1551
+2023-02-12 23:55:03,318 - mmseg - INFO - Iter [39600/40000]	lr: 6.015e-07, eta: 0:00:28, time: 0.073, data_time: 0.021, memory: 3636, decode.loss_ce: 0.1530, decode.acc_seg: 93.3202, loss: 0.1530
+2023-02-12 23:55:20,745 - mmseg - INFO - Iter [39800/40000]	lr: 3.015e-07, eta: 0:00:14, time: 0.087, data_time: 0.037, memory: 3636, decode.loss_ce: 0.1585, decode.acc_seg: 93.2940, loss: 0.1585
+2023-02-12 23:55:35,894 - mmseg - INFO - Saving checkpoint at 40000 iterations
+2023-02-12 23:55:36,261 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:55:36,262 - mmseg - INFO - Iter [40000/40000]	lr: 1.500e-09, eta: 0:00:00, time: 0.078, data_time: 0.023, memory: 3636, decode.loss_ce: 0.1625, decode.acc_seg: 93.3655, loss: 0.1625
+2023-02-12 23:55:37,577 - mmseg - INFO - per class results:
+2023-02-12 23:55:37,578 - mmseg - INFO - 
++-----------+-------+-------+
+|   Class   |  IoU  |  Acc  |
++-----------+-------+-------+
+| obstacles | 49.93 | 60.04 |
+|   water   | 80.52 | 89.32 |
+|   nature  | 87.69 | 95.04 |
+|   moving  | 48.56 | 61.98 |
+|  landable | 88.38 | 94.57 |
++-----------+-------+-------+
+2023-02-12 23:55:37,578 - mmseg - INFO - Summary:
+2023-02-12 23:55:37,578 - mmseg - INFO - 
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 90.95 | 71.02 | 80.19 |
++-------+-------+-------+
+2023-02-12 23:55:37,578 - mmseg - INFO - Exp name: segfomer.py
+2023-02-12 23:55:37,578 - mmseg - INFO - Iter(val) [40]	aAcc: 0.9095, mIoU: 0.7102, mAcc: 0.8019, IoU.obstacles: 0.4993, IoU.water: 0.8052, IoU.nature: 0.8769, IoU.moving: 0.4856, IoU.landable: 0.8838, Acc.obstacles: 0.6004, Acc.water: 0.8932, Acc.nature: 0.9504, Acc.moving: 0.6198, Acc.landable: 0.9457
