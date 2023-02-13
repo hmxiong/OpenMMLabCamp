@@ -1,0 +1,26 @@
+Done image [50 / 200], fps: 61.89 img / s
+Done image [100/ 200], fps: 61.68 img / s
+Done image [150/ 200], fps: 61.77 img / s
+Done image [200/ 200], fps: 62.62 img / s
+Overall fps: 62.62 img / s
+
+Average fps of 1 evaluations: 62.62
+The variance of 1 evaluations: 0.0
+
+
++-----------+-------+-------+
+|   Class   |  IoU  |  Acc  |
++-----------+-------+-------+
+| obstacles | 50.08 | 62.33 |
+|   water   | 84.05 | 91.62 |
+|   nature  | 88.35 | 95.03 |
+|   moving  | 47.16 | 59.37 |
+|  landable | 88.59 | 94.44 |
++-----------+-------+-------+
+Summary:
+
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 91.11 | 71.64 | 80.56 |
++-------+-------+-------+

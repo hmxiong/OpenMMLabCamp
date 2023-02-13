@@ -1,0 +1,41 @@
+Done image [50 / 200], fps: 16.94 img / s
+Done image [100/ 200], fps: 15.41 img / s
+Done image [150/ 200], fps: 14.55 img / s
+Done image [200/ 200], fps: 14.33 img / s
+Overall fps: 14.33 img / s
+
+Average fps of 1 evaluations: 14.33
+The variance of 1 evaluations: 0.0
+
++-------------+-------+-------+
+|    Class    |  IoU  |  Acc  |
++-------------+-------+-------+
+|  background | 91.48 |  96.9 |
+|  aeroplane  | 83.32 | 90.09 |
+|   bicycle   | 33.69 | 89.37 |
+|     bird    | 69.94 | 81.95 |
+|     boat    | 55.89 | 70.03 |
+|    bottle   | 44.92 |  48.1 |
+|     bus     | 79.86 | 83.48 |
+|     car     |  76.8 | 86.79 |
+|     cat     | 76.66 | 90.59 |
+|    chair    | 26.54 | 42.16 |
+|     cow     | 64.83 | 74.99 |
+| diningtable | 38.78 | 45.36 |
+|     dog     | 58.66 | 82.06 |
+|    horse    | 65.09 | 71.58 |
+|  motorbike  | 73.92 | 81.21 |
+|    person   | 80.27 | 88.38 |
+| pottedplant | 48.25 | 51.24 |
+|    sheep    |  66.3 | 70.26 |
+|     sofa    | 31.74 | 37.23 |
+|    train    | 62.43 | 64.65 |
+|  tvmonitor  | 55.62 | 63.98 |
++-------------+-------+-------+
+Summary:
+
++-------+-------+-------+
+|  aAcc |  mIoU |  mAcc |
++-------+-------+-------+
+| 91.05 | 61.19 | 71.92 |
++-------+-------+-------+
